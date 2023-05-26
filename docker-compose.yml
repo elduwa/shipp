@@ -1,0 +1,64 @@
+services:
+  ba-backend:
+    image: your-docker-hub-username/your-repo-name:your-image-tag
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production
+      - SECRET_KEY=your_secret_key
+      - SQLITE_URL=sqlite:///data/sqlite.db
+      - INFLUXDB_URL=http://influxdb:8086/
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    environment:
+      - LOCAL_NETWORK_IP_RANGE
+    command: /bin/bash -c "envsubst '$$LOCAL_NETWORK_IP_RANGE' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+  sqlite:
+    image: nouchka/sqlite3
+    volumes:
+      - sqlite-data:/data
+  influxdb:
+    image: influxdb:latest
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+  pihole:
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      - TZ=your_time_zone
+      - WEBPASSWORD=your_admin_password
+    volumes:
+      - pihole-etc:/etc/pihole
+      - pihole-dnsmasq:/etc/dnsmasq.d
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  homeassistant:
+    image: homeassistant/home-assistant:stable
+    ports:
+      - "8123:8123"
+    volumes:
+      - homeassistant-config:/config
+
+volumes:
+  sqlite-data:
+  influxdb-data:
+  pihole-etc:
+  pihole-dnsmasq:
+  grafana-data:
+  homeassistant-config:

@@ -1,2 +1,5 @@
 flask
+flask-sqlalchemy
+flask-migrate
 requests
+python-dotenv
