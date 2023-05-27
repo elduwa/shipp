@@ -5,13 +5,15 @@ services:
     expose: 8000
     volumes:
       - static_volume:/app/app/static
-      - sqlite-data:/app/data
+      - sqlite-data:/app/data/rel_db
+      - pihole-etc:/app/data/pihole_etc
     environment:
       - FLASK_APP=run.py
       - FLASK_ENV=production
       - SECRET_KEY=your_secret_key
-      - SQLITE_URL=sqlite:///app/data/sqlite.db
+      - SQLITE_URL=sqlite:///app/data/rel_db/sqlite.db
       - INFLUXDB_URL=http://influxdb:8086/
+      - PIHOLE_DB_URL=sqlite:////app/data/pihole_etc/pihole-FTL.db
 
   nginx:
     container_name: nginx_reverse_proxy
