@@ -1,0 +1,21 @@
+# Renamed and moved to /etc/nginx/nginx.conf 
+
+upstream ba_backend {
+    server ba_backend:8000;
+}
+
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://ba_backend;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Prefix /;
+    }
+
+    location /static/ {
+        alias /app/app/static/;
+    }
+}

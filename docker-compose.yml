@@ -1,47 +1,60 @@
 services:
   ba-backend:
+    container_name: ba-backend
     image: your-docker-hub-username/your-repo-name:your-image-tag
-    ports:
-      - "8000:8000"
+    expose: 8000
+    volumes:
+      - static_volume:/app/app/static
+      - sqlite-data:/app/data
     environment:
       - FLASK_APP=run.py
       - FLASK_ENV=production
       - SECRET_KEY=your_secret_key
-      - SQLITE_URL=sqlite:///data/sqlite.db
+      - SQLITE_URL=sqlite:///app/data/sqlite.db
       - INFLUXDB_URL=http://influxdb:8086/
+
   nginx:
+    container_name: nginx_reverse_proxy
     image: nginx:latest
     ports:
       - "8080:80"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/:/etc/nginx/conf.d/
+      - static_volume:/app/app/static
     environment:
       - LOCAL_NETWORK_IP_RANGE
-    command: /bin/bash -c "envsubst '$$LOCAL_NETWORK_IP_RANGE' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
-  sqlite:
-    image: nouchka/sqlite3
-    volumes:
-      - sqlite-data:/data
+    command: /bin/bash -c "envsubst '$$LOCAL_NETWORK_IP_RANGE' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && rm /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+
   influxdb:
+    container_name: influxdb
     image: influxdb:latest
     volumes:
       - influxdb-data:/var/lib/influxdb
+
   pihole:
+    container_name: pihole
     image: pihole/pihole:latest
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "67:67/udp"
-      - "80:80/tcp"
-      - "443:443/tcp"
+      - "${HTTPPORT}:80/tcp"
+      - "${HTTPSPORT}:443/tcp"
     environment:
-      - TZ=your_time_zone
-      - WEBPASSWORD=your_admin_password
+      - TZ: ${TZ}
+      - WEBPASSWORD: ${WEBPASSWORD}
+      - FTLCONF_LOCAL_IPV4: ${FTLCONF_LOCAL_IPV4}
+      - PIHOLE_DNS_: ${DNSSERVER}
+      - REV_SERVER: ${REV_SERVER}
+      - REV_SERVER_TARGET: ${REV_SERVER_TARGET}
+      - REV_SERVER_CIDR: ${REV_SERVER_CIDR}
     volumes:
-      - pihole-etc:/etc/pihole
-      - pihole-dnsmasq:/etc/dnsmasq.d
+      - "pihole-etc:/etc/pihole"
+      - "pihole-dnsmasq:/etc/dnsmasq.d"
+      - "${RESOLV_CONF}:/etc/resolv.conf"
+    restart: unless-stopped
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
@@ -49,11 +62,14 @@ services:
       - grafana-data:/var/lib/grafana
 
   homeassistant:
-    image: homeassistant/home-assistant:stable
-    ports:
-      - "8123:8123"
+    container_name: homeassistant
+    image: ghcr.io/homeassistant/home-assistant:stable
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
     volumes:
       - homeassistant-config:/config
+      - /etc/localtime:/etc/localtime:ro
 
 volumes:
   sqlite-data:
@@ -62,3 +78,4 @@ volumes:
   pihole-dnsmasq:
   grafana-data:
   homeassistant-config:
+  static_volume:
