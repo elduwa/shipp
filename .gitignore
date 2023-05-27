@@ -59,3 +59,8 @@ instance/
 .venv/
 venv/
 ENV/
+
+docker-compose-development.yml
+docker_data/
+
+launch.json

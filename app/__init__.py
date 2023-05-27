@@ -2,20 +2,22 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from config import Config, config
-import os
+from config import Config
 
-app = Flask(__name__)
 
-if os.getenv('FLASK_ENV') == 'production':
-    app.config.from_object(config['production'])
-else:
-    app.config.from_object(config['development'])
+def create_app(config: Config):
+    app = Flask(__name__)
+    app.config.from_object(config)
 
-db_uri = app.config['SQLALCHEMY_DATABASE_URI']
-influxdb_host = app.config['INFLUXDB_HOST']
+    from app import views, models
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+    app.register_blueprint(views.bp)
 
-from app import routes, models
+    return app
+
+# db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+# influxdb_host = app.config['INFLUXDB_HOST']
+
+# move to model (see patterns in documentation) use current_app
+# db = SQLAlchemy(app)
+# migrate = Migrate(app, db)
