@@ -28,4 +28,4 @@ jobs:
           context: .
           push: true
           tags: your-docker-hub-username/your-repo-name:${{ github.event.release.tag_name }}, your-docker-hub-username/your-repo-name:latest
-          platforms: linux/arm/v7
+          platforms: linux/arm64

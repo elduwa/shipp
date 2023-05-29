@@ -1,4 +1,4 @@
-FROM arm32v7/python:3.11-slim-buster
+FROM arm64v8/python:3.11-bullseye
 
 WORKDIR /app
 
