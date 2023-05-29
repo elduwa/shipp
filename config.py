@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 class Config:
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLITE_URI = os.getenv('SQLITE_URL')
+    PIHOLE_DB_URL = os.getenv('PIHOLE_DB_URL')
     INFLUXDB_HOST = os.getenv('INFLUXDB_HOST')
     INFLUXDB_PORT = os.getenv('INFLUXDB_PORT')
 
@@ -22,7 +23,12 @@ class ProductionConfig(Config):
     pass
 
 
+class TestConfig(Config):
+    TESTING = True
+
+
 config = {
     'development': DevelopmentConfig,
-    'production': ProductionConfig
+    'production': ProductionConfig,
+    'test': TestConfig
 }
