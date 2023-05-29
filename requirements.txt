@@ -3,4 +3,7 @@ flask-sqlalchemy
 flask-migrate
 requests
 python-dotenv
+pytest
+pytest-mock
 gunicorn
+pytz
