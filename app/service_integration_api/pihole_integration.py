@@ -81,6 +81,13 @@ class PiholeConsumer():
         response = builder.query.send_request()
         return response
 
+    def get_topclients(self, num_clients: int) -> dict:
+        builder = QueryBuilder()
+        builder.add_auth_token(self._auth_token)
+        builder.type_top_clients(num_clients)
+        response = builder.query.send_request()
+        return response
+
     def datetime_str_to_timestamp(self, datetime_str):
         try:
             dt = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S %z")
