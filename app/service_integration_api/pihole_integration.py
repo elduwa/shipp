@@ -1,9 +1,7 @@
-from requests import Request, PreparedRequest, Session
+from requests import Request, PreparedRequest
 import requests
 import json
 from datetime import datetime
-
-PIHOLE_API_BASE_URL = "http://pi.hole/admin/api.php"
 
 
 class Query():
@@ -26,14 +24,15 @@ class Query():
 
 class QueryBuilder():
 
-    QUERY_TYPES = {"getAllQueries", "topClients", "summaryRaw", "overTimeData"}
+    # TODO: change into env variable
+    PIHOLE_API_BASE_URL = "http://pi.hole/admin/api.php"
 
     def __init__(self):
         self.reset()
     #    self._query.add_param("auth", auth_token)
 
     def reset(self):
-        self._query = Query(PIHOLE_API_BASE_URL)
+        self._query = Query(self.PIHOLE_API_BASE_URL)
 
     @property
     def query(self) -> Query:
@@ -72,12 +71,21 @@ class PiholeConsumer():
     def __init__(self, auth_token: str):
         self._auth_token = auth_token
 
-    def get_all_queries(self, from_datetime: str, until_datetime: str) -> dict:
+    def get_all_queries_dt(self, from_datetime: str, until_datetime: str) -> dict:
         builder = QueryBuilder()
         builder.add_auth_token(self._auth_token)
         builder.type_all_queries()
         builder.add_from(self.datetime_str_to_timestamp(from_datetime))
         builder.add_until(self.datetime_str_to_timestamp(until_datetime))
+        response = builder.query.send_request()
+        return response
+
+    def get_all_queries_ts(self, from_timestamp: int, until_timestamp: int) -> dict:
+        builder = QueryBuilder()
+        builder.add_auth_token(self._auth_token)
+        builder.type_all_queries()
+        builder.add_from(from_timestamp)
+        builder.add_until(until_timestamp)
         response = builder.query.send_request()
         return response
 
