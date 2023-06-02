@@ -6,14 +6,20 @@ services:
     volumes:
       - static_volume:/app/app/static
       - sqlite-data:/app/data/rel_db
+      - sqlite-jobstore:/app/data/jobstore
       - pihole-etc:/app/data/pihole_etc
     environment:
       - FLASK_APP=run.py
       - FLASK_ENV=production
-      - SECRET_KEY=your_secret_key
+      - SECRET_KEY=<your_secret_key>
       - SQLITE_URL=sqlite:////app/data/rel_db/sqlite.db
       - INFLUXDB_URL=http://influxdb:8086/
+      - INFLUXDB_AUTH_TOKEN=<your_influxdb_auth_token>
+      - INFLUXDB_ORG=home
+      - INFLUXDB_BUCKET=communications
       - PIHOLE_DB_URL=sqlite:////app/data/pihole_etc/pihole-FTL.db
+      # Not sure if needed
+      - JOBSTORE_DB_URL=sqlite:////app/data/jobstore/jobstore.db
 
   nginx:
     container_name: nginx_reverse_proxy
@@ -29,9 +35,19 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: influxdb:latest
+    image: influxdb:2.7.1-alpine
+    expose: 8086
     volumes:
-      - influxdb-data:/var/lib/influxdb
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpw
+      - DOCKER_INFLUXDB_INIT_ORG=home
+      - DOCKER_INFLUXDB_INIT_BUCKET=communications
+      - DOCKER_INFLUXDB_INIT_RETENTION=1y
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=<your_influxdb_auth_token>
 
   pihole:
     container_name: pihole
@@ -57,11 +73,14 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:latest
+    image: grafana/grafana-oss:latest
     ports:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
+    environment:
+      - GF_LOG_MODE="console file"
+
 
   homeassistant:
     container_name: homeassistant
@@ -75,7 +94,9 @@ services:
 
 volumes:
   sqlite-data:
+  sqlite-jobstore:
   influxdb-data:
+  influxdb-config:
   pihole-etc:
   pihole-dnsmasq:
   grafana-data:
