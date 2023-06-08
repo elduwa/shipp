@@ -20,7 +20,7 @@ COPY migrations migrations
 COPY run.py config.py ./
 
 # Install cron and create a cron job
-RUN apt-get update && apt-get install -y cron
+RUN sudo apt-get update && sudo apt-get install -y cron
 RUN echo "0 * * * * cd /app/app && .venv/bin/flask execute_job >> job.log 2>&1" > /etc/cron.d/webapp-cron
 
 # run-time configuration

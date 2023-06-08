@@ -1,7 +1,6 @@
 flask
 flask-sqlalchemy
 flask-migrate
-flask-apscheduler
 requests
 python-dotenv
 pytest
