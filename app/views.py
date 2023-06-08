@@ -1,5 +1,5 @@
 # App routing
-from flask import render_template, Blueprint
+from flask import  Blueprint
 
 bp = Blueprint("main", __name__)
 

@@ -1,6 +1,5 @@
 from requests import Request, PreparedRequest
 import requests
-import json
 from datetime import datetime
 
 

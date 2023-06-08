@@ -53,7 +53,7 @@ class InfluxDBClientWrapper:
         except InfluxDBError as e:
             if e.response.status == 401:
                 raise Exception(
-                    f"Insufficient write permissions to 'my-bucket'.") from e
+                    f"Insufficient write permissions to '{self.influx_bucket}'.") from e
             raise e
         except Exception as e:
             current_app.logger.error(f"Error writing to InfluxDB: {e}")

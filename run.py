@@ -1,7 +1,6 @@
 from app import create_app
 from config import Config, config
 import os
-import logging
 
 current_config: Config = None
 
