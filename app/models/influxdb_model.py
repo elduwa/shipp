@@ -76,7 +76,7 @@ class InfluxDBClientWrapper:
                 """
                 Synchronous write
                 """
-                current_app.logger.info(f'Writing... {len(batch)}')
+                current_app.logger.info(f'Writing batch... {len(batch)}')
                 write_api.write(bucket=self.influx_bucket, record=batch)
 
             """
@@ -85,7 +85,7 @@ class InfluxDBClientWrapper:
             batches.subscribe(on_next=lambda batch: write_batch_sync(batch),
                               on_error=lambda ex: print(
                                   f'Unexpected error: {ex}'),
-                              on_completed=lambda: print('Import finished!'))
+                              on_completed=lambda: print('Write complete!'))
 
     def store_dns_query_measurements(self, measurements: Iterable[DNSQueryMeasurement]):
         for measurement in measurements:
@@ -122,4 +122,4 @@ class InfluxDBClientWrapper:
             latest_timestamp = result[0].records[0].get_time()
             return int(latest_timestamp.timestamp())
         else:
-            return int(datetime.now().timestamp()) * 1000000000
+            return -1

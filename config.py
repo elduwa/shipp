@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 # from cryptography.fernet import Fernet
 
 
@@ -8,24 +7,19 @@ class Config:
 
     DEBUG = False
     TESTING = False
-    SQLITE_URI = os.getenv('SQLITE_URL')
+    # Default application db
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLITE_URL')
+    # Mounted pi-hole db
+    SQLALCHEMY_BINDS = {
+        "pihole": os.getenv('PIHOLE_DB_URL')
+    }
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     PIHOLE_DB_URL = os.getenv('PIHOLE_DB_URL')
     PIHOLE_AUTH_TOKEN = os.getenv('PIHOLE_AUTH_TOKEN')
     INFLUXDB_URL = os.getenv('INFLUXDB_URL')
     INFLUXDB_AUTH_TOKEN = os.getenv('INFLUXDB_AUTH_TOKEN')
     INFLUXDB_BUCKET = os.getenv('INFLUXDB_BUCKET')
     INFLUXDB_ORG = os.getenv('INFLUXDB_ORG')
-    # JOBSTORE_DB_URL = os.getenv('JOBSTORE_DB_URL')
-    # SCHEDULER_API_ENABLED = False
-    # SCHEDULER_API_PREFIX = "/scheduler"
-    # SCHEDULER_ENDPOINT_PREFIX = "scheduler."
-    # SCHEDULER_ALLOWED_HOSTS = ["localhost"]
-    # SCHEDULER_JOBSTORES = {
-    #   'default': SQLAlchemyJobStore(url=JOBSTORE_DB_URL)
-    # }
-    SCHEDULER_JOB_DEFAULTS = {
-        'coalesce': True
-    }
     SCHEDULER_TIMEINTERVAL = 3600
 
 
