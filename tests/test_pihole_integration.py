@@ -1,4 +1,3 @@
-import pytest
 from app.service_integration_api import PiholeConsumer
 import requests
 from tests import utils
@@ -17,9 +16,12 @@ def test_get_all_queries(mocker):
     from_str = utils.datetime_to_string(from_datetime)
     until_str = utils.datetime_to_string(until_datetime)
 
-    result = pihole_consumer.get_all_queries(
+    result = pihole_consumer.get_all_queries_dt(
         from_str, until_str)
 
     requests.get.assert_called_once_with(
-        "http://pi.hole/admin/api.php", params={"auth": "test_auth_token", "getAllQueries": "1", "from": str(utils.datetime_to_unix_timestamp(from_datetime)), "until": str(utils.datetime_to_unix_timestamp(until_datetime))})
+        "http://pi.hole/admin/api.php", params={"auth": "test_auth_token",
+                                                "getAllQueries": "1",
+                                                "from": str(utils.datetime_to_unix_timestamp(from_datetime)),
+                                                "until": str(utils.datetime_to_unix_timestamp(until_datetime))})
     assert result == {"key": "value"}
