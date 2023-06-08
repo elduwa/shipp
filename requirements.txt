@@ -7,7 +7,6 @@ pytest
 pytest-mock
 gunicorn
 pytz
-apscheduler
 cryptography
 influxdb-client
 reactivex

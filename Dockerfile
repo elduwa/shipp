@@ -1,4 +1,4 @@
-FROM arm64v8/python:3.11-slim-bullseye
+FROM arm64v8/python:3.11-bullseye
 
 ENV FLASK_APP run.py
 ENV FLASK_ENV production
@@ -19,9 +19,14 @@ COPY app app
 COPY migrations migrations
 COPY run.py config.py ./
 
-# Install cron and create a cron job
-RUN sudo apt-get update && sudo apt-get install -y cron
-RUN echo "0 * * * * cd /app/app && .venv/bin/flask execute_job >> job.log 2>&1" > /etc/cron.d/webapp-cron
+# Switch to root user and install cron
+USER root
+RUN apt-get update && apt-get install -y cron
+
+RUN echo "0 * * * * cd /app/app && .venv/bin/flask execute_job \>> job.log 2\>&1" > /etc/cron.d/webapp-cron
+
+# Switch back to non-root user
+USER server_runner
 
 # run-time configuration
 EXPOSE 8000
