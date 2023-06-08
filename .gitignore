@@ -64,3 +64,4 @@ docker-compose-development.yml
 docker_data/
 
 .vscode/
+.idea/
