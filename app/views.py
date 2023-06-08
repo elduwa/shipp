@@ -1,10 +1,9 @@
 # App routing
-from flask import  Blueprint
+from flask import Blueprint, redirect
 
 bp = Blueprint("main", __name__)
 
 
 @bp.route("/")
-def homepage():
-    """View function for Home Page."""
-    return "Hello World!"
+def index():
+    return redirect("http://grafana:3000/")
