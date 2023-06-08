@@ -21,6 +21,7 @@ class Device(db.Model):
         db.session.commit()
 
     def update_device(self):
+        db.session.add(self)
         db.session.commit()
 
     def delete_device(self):
@@ -43,6 +44,7 @@ class DeviceConfig(db.Model):
         db.session.commit()
 
     def update_device_config(self):
+        db.session.add(self)
         db.session.commit()
 
     def delete_device_config(self):
@@ -66,6 +68,7 @@ class Policy(db.Model):
         db.session.commit()
 
     def update_policy(self):
+        db.session.add(self)
         db.session.commit()
 
     def delete_policy(self):

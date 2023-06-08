@@ -1,5 +1,8 @@
 from app import create_app
 from config import Config, config
+from flask_migrate import upgrade
+from app.extensions import db, migrate
+from app.models.database_model import Device, DeviceConfig, Policy
 import os
 
 current_config: Config = None
@@ -11,6 +14,7 @@ else:
 
 app = create_app(current_config)
 
+migrate.init_app(app, db)
 
 @app.cli.command()
 def execute_job():
@@ -18,6 +22,16 @@ def execute_job():
     from app.monitors.pihole_monitor import fetch_query_data_job
     fetch_query_data_job()
 
+@app.cli.command()
+def deploy():
+    """Run deployment tasks."""
+    # migrate database to latest revision
+    upgrade()
+
+@app.shell_context_processor
+def make_shell_context():
+    return dict(db=db, Device=Device,
+                DeviceConfig=DeviceConfig, Policy=Policy)
 
 if __name__ == '__main__':
     app.logger.info("Starting with app.run()..")

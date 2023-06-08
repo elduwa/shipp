@@ -6,7 +6,6 @@ services:
     volumes:
       - static_volume:/app/app/static
       - sqlite-data:/app/data/rel_db
-      - sqlite-jobstore:/app/data/jobstore
       - pihole-etc:/app/data/pihole_etc
     environment:
       - SECRET_KEY=<your_secret_key>
@@ -16,8 +15,6 @@ services:
       - INFLUXDB_ORG=home
       - INFLUXDB_BUCKET=communications
       - PIHOLE_DB_URL=sqlite:////app/data/pihole_etc/pihole-FTL.db
-      # Not sure if needed
-      - JOBSTORE_DB_URL=sqlite:////app/data/jobstore/jobstore.db
 
   nginx:
     container_name: nginx_reverse_proxy
@@ -92,7 +89,6 @@ services:
 
 volumes:
   sqlite-data:
-  sqlite-jobstore:
   influxdb-data:
   influxdb-config:
   pihole-etc:
