@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Selectable Table with Edit Form</title>
+  <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
+  <style>
+    .form-overlay {
+      display: none;
+    }
+
+    .form-container {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-4">Selectable Table with Edit Form</h1>
+
+    <table id="myTable" class="w-full mb-8">
+      <thead>
+        <tr>
+          <th class="py-2 px-4">MAC</th>
+          <th class="py-2 px-4">IP</th>
+          <th class="py-2 px-4">Name</th>
+          <th class="py-2 px-4">Managed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in table_data %}
+        <tr>
+          <td class="py-2 px-4">{{ row.mac }}</td>
+          <td class="py-2 px-4">{{ row.ip }}</td>
+          <td class="py-2 px-4">{{ row.name }}</td>
+          <td class="py-2 px-4">{{ row.managed }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button id="editButton" {% if not has_selected_row %}disabled{% endif %} class="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">Edit Selected Row</button>
+
+    <button id="scanButton" class="py-2 px-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded">Scan Network</button>
+
+    <button id="confirmButton" class="py-2 px-4 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded">Confirm Changes</button>
+
+    <div class="form-overlay bg-black bg-opacity-50 absolute top-0 left-0 w-full h-full"></div>
+
+    <div class="form-container absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded shadow-lg">
+      <form id="editForm" method="POST">
+        {{ form.csrf_token }}
+        <div class="mb-4">
+          {{ form.macInput.label(class="block text-gray-700 font-bold mb-2") }}
+          {{ form.macInput(class="form-input mt-1 block w-full") }}
+          {% if form.macInput.errors %}
+          <p class="text-red-500 text-xs italic">{{ form.macInput.errors[0] }}</p>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          {{ form.ipInput.label(class="block text-gray-700 font-bold mb-2") }}
+          {{ form.ipInput(class="form-input mt-1 block w-full") }}
+          {% if form.ipInput.errors %}
+          <p class="text-red-500 text-xs italic">{{ form.ipInput.errors[0] }}</p>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          {{ form.nameInput.label(class="block text-gray-700 font-bold mb-2") }}
+          {{ form.nameInput(class="form-input mt-1 block w-full") }}
+          {% if form.nameInput.errors %}
+          <p class="text-red-500 text-xs italic">{{ form.nameInput.errors[0] }}</p>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          {{ form.managedInput.label(class="block text-gray-700 font-bold mb-2") }}
+          {{ form.managedInput(class="form-checkbox mt-1 block") }}
+          {% if form.managedInput.errors %}
+          <p class="text-red-500 text-xs italic">{{ form.managedInput.errors[0] }}</p>
+          {% endif %}
+        </div>
+        <button type="submit" class="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">Save</button>
+      </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='scanner.js') }}"></script>
+  </div>
+</body>
+</html>

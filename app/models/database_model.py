@@ -1,5 +1,13 @@
 from app.extensions import db
 from datetime import datetime
+from enum import Enum
+
+
+class PolicyType(Enum):
+    ALLOW_DOMAIN = 1
+    BLOCK_DOMAIN = 2
+    ALLOW_ALL = 3
+    BLOCK_ALL = 4
 
 
 class Device(db.Model):

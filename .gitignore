@@ -65,3 +65,9 @@ docker_data/
 
 .vscode/
 .idea/
+
+node_modules
+build
+npm-debug.log
+.nyc
+.DS_Store

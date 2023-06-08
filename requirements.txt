@@ -2,6 +2,8 @@ flask
 flask-sqlalchemy
 flask-migrate
 flask-apscheduler
+flask-wtf
+wtforms
 requests
 python-dotenv
 pytest
@@ -12,3 +14,4 @@ apscheduler
 cryptography
 influxdb-client
 reactivex
+scapy
