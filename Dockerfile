@@ -17,7 +17,7 @@ RUN .venv/bin/pip install -r requirements.txt
 
 COPY app app
 COPY migrations migrations
-COPY run.py config.py boot.sh ./
+COPY run.py config.py ./
 
 # Install cron and create a cron job
 RUN apt-get update && apt-get install -y cron
