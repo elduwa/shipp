@@ -9,8 +9,6 @@ services:
       - sqlite-jobstore:/app/data/jobstore
       - pihole-etc:/app/data/pihole_etc
     environment:
-      - FLASK_APP=run.py
-      - FLASK_ENV=production
       - SECRET_KEY=<your_secret_key>
       - SQLITE_URL=sqlite:////app/data/rel_db/sqlite.db
       - INFLUXDB_URL=http://influxdb:8086/
