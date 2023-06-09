@@ -27,5 +27,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: your-docker-hub-username/your-repo-name:${{ github.event.release.tag_name }}, your-docker-hub-username/your-repo-name:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ba-webapp:${{ github.event.release.tag_name }}, ${{ secrets.DOCKERHUB_USERNAME }}/ba-webapp:latest
           platforms: linux/arm64
