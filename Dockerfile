@@ -33,6 +33,6 @@ EXPOSE 8000
 # If we rather use boot.sh approach
 #ENTRYPOINT ["./boot.sh"]
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "run:app"]
+CMD [".venv/bin/gunicorn", "--bind", "0.0.0.0:8000", "run:app"]
 # If wanting to write to stdout instead of default logfile (configure logfile in application)
 #CMD ["gunicorn", "-b", ":5000", "--access-logfile", "-", "--error-logfile", "-", "flasky:app"]
