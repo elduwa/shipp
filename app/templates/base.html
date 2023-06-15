@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>SHIFT - {% block title %}{% endblock %}</title>
+
+    <!-- TailwindCSS -->
+    <link rel="stylesheet" href="{{url_for('static',filename='dist/css/output.css')}}">
+
+    {% block head %}
+    <!-- Placeholder for Other Imports -->
+    {% endblock %}
+</head>
+<body class="min-h-screen bg-gradient-to-b from-accent-1-blue-crayola from-25% via-base-french-gray via-25% to-base-french-gray">
+
+    <div class="absolute w-full bg-accent-1-blue-crayola min-h-75 dark:hidden"></div>
+
+    {% include "includes/sidebar.html" %}
+
+    <main class="sm:ml-64 sm:mt-16 p-4">
+        {% block content %}
+        <!-- Placeholder for main content -->
+        {% endblock %}
+    </main>
+
+    {%  block scripts %}
+        <script src="{{url_for('static',filename='/node_modules/flowbite/dist/flowbite.js')}}"></script>
+        <!-- Placeholder for additional scripts -->
+    {% endblock %}
+</body>
+</html>
