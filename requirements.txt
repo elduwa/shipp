@@ -2,6 +2,7 @@ flask
 flask-sqlalchemy
 flask-migrate
 flask-wtf
+wtforms
 requests
 python-dotenv
 pytest

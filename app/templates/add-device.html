@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Add device
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-6">New device</h1>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-6">
+            {{ form.name.label(class_="form-label") }} {{ form.name(class_="form-input") }}
+        </div>
+        <div class="mb-6">
+            {{ form.mac.label(class_="form-label") }} {{ form.mac(class_="form-input") }}
+        </div>
+        <div class="mb-6">
+            {{ form.ip.label(class_="form-label") }} {{ form.ip(class_="form-input") }}
+        </div>
+        <button type="submit"
+                class="form-btn" id="add-btn">
+            Add device
+        </button>
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+{% endblock %}
