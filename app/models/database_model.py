@@ -36,7 +36,7 @@ class DeviceConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     device_id = db.Column(db.Integer, db.ForeignKey('device.id'), nullable=False)
     valid_from = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    valid_to = db.Column(db.DateTime)
+    valid_to = db.Column(db.DateTime, index=True)
     ip_address = db.Column(db.String(39), nullable=False)
 
     def insert_device_config(self):
@@ -60,8 +60,6 @@ class Policy(db.Model):
     policy_type = db.Column(db.String(64), nullable=False)
     domain = db.Column(db.String(64))
     active = db.Column(db.Boolean, default=True, nullable=False)
-    devices = db.relationship("Device", secondary="policy_device_map",
-                              backref=db.backref('policies', lazy="dynamic"), lazy="dynamic")
 
     def insert_policy(self):
         db.session.add(self)
