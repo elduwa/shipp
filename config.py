@@ -1,13 +1,11 @@
 import os
-from dotenv import load_dotenv
-# from cryptography.fernet import Fernet
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
 
     DEBUG = False
     TESTING = False
+    SECRET_KEY = os.getenv('SECRET_KEY')
     # Default application db
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLITE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -19,16 +17,13 @@ class Config:
     INFLUXDB_ORG = os.getenv('INFLUXDB_ORG')
     SCHEDULER_TIMEINTERVAL = 3600
 
+    @staticmethod
+    def init_app(app):
+        pass
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "instance/data/sqlite.db")
-
-    def __init__(self):
-        super().__init__()
-        dotenv_path = os.path.join(basedir, '.env')
-        load_dotenv(dotenv_path)
-
 
 
 class ProductionConfig(Config):
@@ -36,6 +31,10 @@ class ProductionConfig(Config):
     SQLALCHEMY_BINDS = {
         "pihole": os.getenv('PIHOLE_DB_URL')
     }
+
+    @classmethod
+    def init_app(cls, app):
+        pass
 
 
 class TestConfig(Config):
