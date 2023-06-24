@@ -1,15 +1,10 @@
 from flask import current_app
 from app.service_integration_api import PiholeConsumer
 from app.models.influxdb_model import DNSQueryMeasurement, InfluxDBClientWrapper
-from app.models.database_model import Device, DeviceConfig
+from app.models.database_model import DeviceConfig
 from app.extensions import db
 from datetime import datetime
 
-# with scheduler.app.app_context():
-#   SCHEDULER_TIMEINTERVAL = current_app.config['SCHEDULER_TIMEINTERVAL']
-
-
-# @scheduler.task('interval', id='fetch_query_data_job', seconds=20)
 def fetch_query_data_job():
     current_app.logger.info('starting job...')
     # Load latest record from influxdb and find timestamp
@@ -28,7 +23,7 @@ def fetch_query_data_job():
         from_timestamp, until_timestamp)['data']
 
     # Get all active ips from db
-    active_ips = db.session.execute(db.select(DeviceConfig.ip_address).where(DeviceConfig.valid_to == None)).scalars().all()
+    active_ips = db.session.execute(db.select(DeviceConfig.ip_address).where(DeviceConfig.valid_to == None)).scalars().all() # noqa: E711
     active_ip_set = set(active_ips)
 
     dns_query_measurements = []

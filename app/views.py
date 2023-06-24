@@ -1,7 +1,7 @@
 # App routing
 from flask import Blueprint, render_template, redirect, url_for
 from app.extensions import db
-from app.models.database_model import Device, DeviceConfig, Policy
+from app.models.database_model import Device, DeviceConfig
 from app.forms import DeviceForm
 from datetime import datetime
 
@@ -17,7 +17,7 @@ def index():
 def devices():
     active_devices = db.session.execute(db.select(
         Device.id, Device.device_name, Device.mac_address, DeviceConfig.ip_address, DeviceConfig.valid_from)
-                                        .join(Device.device_configs).where(DeviceConfig.valid_to == None))
+                                        .join(Device.device_configs).where(DeviceConfig.valid_to == None)) # noqa: E711
     return render_template("devices.html", devices=active_devices)
 
 
