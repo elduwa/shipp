@@ -2,19 +2,20 @@ services:
   ba-backend:
     container_name: ba-backend
     image: your-docker-hub-username/your-repo-name:your-image-tag
-    expose: 8000
+    expose:
+      - 8000
     volumes:
-      - static_volume:/app/app/static
-      - sqlite-data:/app/data/rel_db
-      - pihole-etc:/app/data/pihole_etc
+      - static_volume:/opt/webapp/app/static
+      - sqlite-data:/opt/webapp/data/rel_db
+      - pihole-etc:/opt/webapp/data/pihole_etc
     environment:
       - SECRET_KEY=<your_secret_key>
-      - SQLITE_URL=sqlite:////app/data/rel_db/sqlite.db
+      - SQLITE_URL=sqlite:////opt/webapp/data/rel_db/sqlite.db
       - INFLUXDB_URL=http://influxdb:8086/
       - INFLUXDB_AUTH_TOKEN=<your_influxdb_auth_token>
       - INFLUXDB_ORG=home
       - INFLUXDB_BUCKET=communications
-      - PIHOLE_DB_URL=sqlite:////app/data/pihole_etc/pihole-FTL.db
+      - PIHOLE_DB_URL=sqlite:////opt/webapp/data/pihole_etc/pihole-FTL.db
 
   nginx:
     container_name: nginx_reverse_proxy
@@ -23,10 +24,10 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
-      - static_volume:/app/app/static
+      - static_volume:/opt/webapp/app/static
     environment:
       - LOCAL_NETWORK_IP_RANGE=${REV_SERVER_CIDR}
-    command: /bin/bash -c "envsubst '$$LOCAL_NETWORK_IP_RANGE' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && rm /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    command: /bin/sh -c "envsubst '$$LOCAL_NETWORK_IP_RANGE' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && rm /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
   influxdb:
     container_name: influxdb
@@ -53,16 +54,16 @@ services:
       - "${HTTPPORT}:80/tcp"
       - "${HTTPSPORT}:443/tcp"
     environment:
-      - TZ: ${TZ}
-      - WEBPASSWORD: ${WEBPASSWORD}
-      - FTLCONF_LOCAL_IPV4: ${FTLCONF_LOCAL_IPV4}
-      - PIHOLE_DNS_: ${DNSSERVER}
-      - REV_SERVER: ${REV_SERVER}
-      - REV_SERVER_TARGET: ${REV_SERVER_TARGET}
-      - REV_SERVER_CIDR: ${REV_SERVER_CIDR}
+      - "TZ:${TZ}"
+      - "WEBPASSWORD:${WEBPASSWORD}"
+      - "FTLCONF_LOCAL_IPV4:${FTLCONF_LOCAL_IPV4}"
+      - "PIHOLE_DNS_:${DNSSERVER}"
+      - "REV_SERVER:${REV_SERVER}"
+      - "REV_SERVER_TARGET: ${REV_SERVER_TARGET}"
+      - "REV_SERVER_CIDR:${REV_SERVER_CIDR}"
     volumes:
-      - pihole-etc:/etc/pihole
-      - pihole-dnsmasq:/etc/dnsmasq.d
+      - "pihole-etc:/etc/pihole"
+      - "pihole-dnsmasq:/etc/dnsmasq.d"
       - "${RESOLV_CONF}:/etc/resolv.conf"
     restart: unless-stopped
 
@@ -73,8 +74,6 @@ services:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
-    environment:
-      - GF_LOG_MODE="console file"
 
 
   homeassistant:

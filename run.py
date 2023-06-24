@@ -1,16 +1,23 @@
+from dotenv import load_dotenv
+import os
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+
 from app import create_app
 from config import Config, config
 from flask_migrate import upgrade
 from app.extensions import db, migrate
 from app.models.database_model import Device, DeviceConfig, Policy
-import os
+
 
 current_config: Config = None
 
 if os.getenv('FLASK_ENV') == 'production':
-    current_config = config['production']()
+    current_config = config['production']
 else:
-    current_config = config['development']()
+    current_config = config['development']
 
 app = create_app(current_config)
 
