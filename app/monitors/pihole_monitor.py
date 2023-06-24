@@ -1,6 +1,8 @@
 from flask import current_app
 from app.service_integration_api import PiholeConsumer
 from app.models.influxdb_model import DNSQueryMeasurement, InfluxDBClientWrapper
+from app.models.database_model import Device, DeviceConfig
+from app.extensions import db
 from datetime import datetime
 
 # with scheduler.app.app_context():
@@ -25,15 +27,21 @@ def fetch_query_data_job():
     query_data = pihole_consumer.get_all_queries_ts(
         from_timestamp, until_timestamp)['data']
 
+    # Get all active ips from db
+    active_ips = db.session.execute(db.select(DeviceConfig.ip_address).where(DeviceConfig.valid_to == None)).scalars().all()
+    active_ip_set = set(active_ips)
+
     dns_query_measurements = []
 
     # Process data
-    # TODO: Add logic to filter out irrelevant clients.
     for datapoint in query_data:
+        client = datapoint[3]
+        # Filter out data from inactive/unregistered clients
+        if client not in active_ip_set:
+            continue
         timestamp = int(datapoint[0])
         query_type = datapoint[1]
         domain = datapoint[2]
-        client = datapoint[3]
         status = datapoint[4]
         reply_type = datapoint[6]
         measurement = DNSQueryMeasurement(
