@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from app.extensions import db, login_manager
 from app.models.database_model import Device, DeviceConfig, User
-from app.forms import DeviceForm, LoginForm
+from app.forms import DeviceForm, LoginForm, RegistrationForm
 from datetime import datetime
 from flask_login import login_required, login_user, logout_user
 
@@ -78,6 +78,18 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('main.index'))
+
+
+@bp.route("/register", methods=["GET", "POST"])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(email_address=form.email.data,
+                    username=form.username.data,
+                    password=form.password.data)
+        user.insert_user()
+        return redirect(url_for("main.login"))
+    return render_template("register.html", form=form)
 
 
 @login_manager.unauthorized_handler
