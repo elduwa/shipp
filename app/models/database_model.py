@@ -1,4 +1,4 @@
-from app.extensions import db, cipher_suite
+from app.extensions import db, cipher_suite, login_manager
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -87,8 +87,8 @@ policy_device_map = db.Table('policy_device_map',
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
+    email_address = db.Column(db.String(64), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    email_address = db.Column(db.String(64))
     api_keys = db.relationship('UserApiKey', backref='user', lazy="dynamic")
 
     @property
@@ -116,6 +116,12 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+# Needed for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.execute(db.select(User).where(User.id == user_id)).scalar_one_or_none()
 
 
 class UserApiKey(db.Model):
