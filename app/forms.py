@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, IPAddress, MacAddress, Email, Length, Regexp, EqualTo, ValidationError
 from app.models.database_model import User
-from extensions import db
+from app.extensions import db
 
 
 class DeviceForm(FlaskForm):

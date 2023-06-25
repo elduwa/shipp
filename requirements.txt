@@ -4,6 +4,7 @@ flask-migrate
 flask-wtf
 flask-login
 wtforms~=3.0.1
+wtforms[email]
 requests~=2.31.0
 python-dotenv~=1.0.0
 pytest~=7.4.0

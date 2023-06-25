@@ -126,7 +126,7 @@ def load_user(user_id):
 
 class UserApiKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     encrypted_api_key = db.Column(db.String(128), nullable=False)
 
     @property
