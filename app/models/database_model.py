@@ -1,5 +1,7 @@
-from app.extensions import db
+from app.extensions import db, cipher_suite
 from datetime import datetime
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Device(db.Model):
@@ -80,3 +82,64 @@ class Policy(db.Model):
 policy_device_map = db.Table('policy_device_map',
                              db.Column("policy_id", db.Integer, db.ForeignKey('policy.id'), primary_key=True),
                              db.Column("device_id", db.Integer, db.ForeignKey('device.id'), primary_key=True))
+
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    email_address = db.Column(db.String(64))
+    api_keys = db.relationship('UserApiKey', backref='user', lazy="dynamic")
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def insert_user(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update_user(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_user(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+
+class UserApiKey(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    encrypted_api_key = db.Column(db.String(128), nullable=False)
+
+    @property
+    def api_key(self):
+        decrypted_api_key = cipher_suite.decrypt(self.encrypted_api_key.encode())
+        return decrypted_api_key.decode()
+
+    @api_key.setter
+    def set_api_key(self, api_key):
+        self.encrypted_api_key = cipher_suite.encrypt(api_key.encode())
+
+    def insert_api_key(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update_api_key(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_api_key(self):
+        db.session.delete(self)
+        db.session.commit()
