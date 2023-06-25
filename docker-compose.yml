@@ -10,6 +10,7 @@ services:
       - pihole-etc:/opt/webapp/data/pihole_etc
     environment:
       - SECRET_KEY=<your_secret_key>
+      - API_SECRET_KEY=<your_api_secret_key>
       - SQLITE_URL=sqlite:////opt/webapp/data/rel_db/sqlite.db
       - INFLUXDB_URL=http://influxdb:8086/
       - INFLUXDB_AUTH_TOKEN=<your_influxdb_auth_token>
