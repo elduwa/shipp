@@ -1,6 +1,6 @@
 # App routing
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from app.extensions import db, login_manager
+from app.extensions import db
 from app.models.database_model import Device, DeviceConfig, User
 from app.forms import DeviceForm, LoginForm, RegistrationForm
 from datetime import datetime
@@ -91,7 +91,3 @@ def register():
         return redirect(url_for("main.login"))
     return render_template("register.html", form=form)
 
-
-@login_manager.unauthorized_handler
-def unauthorized():
-    return redirect(url_for("main.login"))

@@ -96,7 +96,7 @@ class User(db.Model, UserMixin):
         raise AttributeError('password is not a readable attribute')
 
     @password.setter
-    def set_password(self, password):
+    def password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
@@ -124,6 +124,7 @@ def load_user(user_id):
     return db.session.execute(db.select(User).where(User.id == user_id)).scalar_one_or_none()
 
 
+# TODO: Evaluate if this is needed or if we just use env variables
 class UserApiKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -135,7 +136,7 @@ class UserApiKey(db.Model):
         return decrypted_api_key.decode()
 
     @api_key.setter
-    def set_api_key(self, api_key):
+    def api_key(self, api_key):
         self.encrypted_api_key = cipher_suite.encrypt(api_key.encode())
 
     def insert_api_key(self):

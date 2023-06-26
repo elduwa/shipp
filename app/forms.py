@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, IPAddress, MacAddress, Email, Length, Regexp, EqualTo, ValidationError
 from app.models.database_model import User
 from app.extensions import db
@@ -28,7 +28,7 @@ class RegistrationForm(FlaskForm):
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
 
     def validate_email(self, field):
-        if db.session.execute(db.select(User).where(User.email == field.data)).scalars().first():
+        if db.session.execute(db.select(User).where(User.email_address == field.data)).scalars().first():
             raise ValidationError('Email already registered.')
 
     def validate_username(self, field):
