@@ -3,8 +3,8 @@ import requests
 from tests import utils
 
 
-def test_get_all_queries(mocker):
-    pihole_consumer = PiholeConsumer("test_auth_token")
+def test_get_all_queries(mocker, app):
+    pihole_consumer = PiholeConsumer("test-domain", "test_auth_token")
 
     mock_response = mocker.Mock()
     mock_response.status_code = 200
@@ -20,8 +20,9 @@ def test_get_all_queries(mocker):
         from_str, until_str)
 
     requests.get.assert_called_once_with(
-        "http://pi.hole/admin/api.php", params={"auth": "test_auth_token",
-                                                "getAllQueries": "1",
-                                                "from": str(utils.datetime_to_unix_timestamp(from_datetime)),
-                                                "until": str(utils.datetime_to_unix_timestamp(until_datetime))})
+        "http://test-domain/admin/api.php", params={"auth": "test_auth_token",
+                                                    "getAllQueries": "1",
+                                                    "from": str(utils.datetime_to_unix_timestamp(from_datetime)),
+                                                    "until": str(utils.datetime_to_unix_timestamp(until_datetime))})
+
     assert result == {"key": "value"}
