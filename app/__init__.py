@@ -7,19 +7,19 @@ from flask.logging import default_handler
 
 def create_app(config: Config):
     app = Flask(__name__)
-
     app.config.from_object(config)
     config.init_app(app)
-    app.logger.setLevel(logging.INFO)
 
-    from app.extensions import db, login_manager
-    db.init_app(app)
-    login_manager.init_app(app)
+    with app.app_context():
+        app.logger.setLevel(logging.INFO)
 
-    logging.getLogger('sqlalchemy').addHandler(default_handler)
+        from app.extensions import db, login_manager
+        db.init_app(app)
+        login_manager.init_app(app)
 
-    from app import views
-    app.register_blueprint(views.bp)
+        logging.getLogger('sqlalchemy').addHandler(default_handler)
 
-    return app
+        from app import views
+        app.register_blueprint(views.bp)
 
+        return app

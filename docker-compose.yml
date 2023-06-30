@@ -16,7 +16,13 @@ services:
       - INFLUXDB_AUTH_TOKEN=<your_influxdb_auth_token>
       - INFLUXDB_ORG=home
       - INFLUXDB_BUCKET=communications
+      - PIHOLE_DOMAIN=<your_pihole_domain>
+      - PIHOLE_AUTH_TOKEN=<your_pihole_auth_token>
       - PIHOLE_DB_URL=sqlite:////opt/webapp/data/pihole_etc/pihole-FTL.db
+      - MAIL_SERVER=<your_mail_server>
+      - MAIL_PORT=<your_mail_port>
+      - MAIL_USERNAME=<your_mail_username>
+      - MAIL_PASSWORD=<your_mail_password>
 
   nginx:
     container_name: nginx_reverse_proxy
@@ -68,15 +74,6 @@ services:
       - "${RESOLV_CONF}:/etc/resolv.conf"
     restart: unless-stopped
 
-  grafana:
-    container_name: grafana
-    image: grafana/grafana-oss:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
-
-
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/homeassistant/home-assistant:stable
@@ -93,6 +90,5 @@ volumes:
   influxdb-config:
   pihole-etc:
   pihole-dnsmasq:
-  grafana-data:
   homeassistant-config:
   static_volume:

@@ -90,4 +90,3 @@ def register():
         user.insert_user()
         return redirect(url_for("main.login"))
     return render_template("register.html", form=form)
-

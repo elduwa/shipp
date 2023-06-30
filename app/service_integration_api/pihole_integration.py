@@ -23,11 +23,10 @@ class Query():
 
 class QueryBuilder():
 
-    # TODO: change into env variable
-    PIHOLE_API_BASE_URL = "http://pi.hole/admin/api.php"
-
-    def __init__(self):
+    def __init__(self, domain):
+        self.PIHOLE_API_BASE_URL = "".join(["http://", domain, "/admin/api.php"])
         self.reset()
+
     #    self._query.add_param("auth", auth_token)
 
     def reset(self):
@@ -67,11 +66,12 @@ class QueryBuilder():
 
 class PiholeConsumer():
 
-    def __init__(self, auth_token: str):
+    def __init__(self, pihole_domain, auth_token: str):
+        self._PIHOLE_DOMAIN = pihole_domain
         self._auth_token = auth_token
 
     def get_all_queries_dt(self, from_datetime: str, until_datetime: str) -> dict:
-        builder = QueryBuilder()
+        builder = QueryBuilder(self._PIHOLE_DOMAIN)
         builder.add_auth_token(self._auth_token)
         builder.type_all_queries()
         builder.add_from(self.datetime_str_to_timestamp(from_datetime))
@@ -80,7 +80,7 @@ class PiholeConsumer():
         return response
 
     def get_all_queries_ts(self, from_timestamp: int, until_timestamp: int) -> dict:
-        builder = QueryBuilder()
+        builder = QueryBuilder(self._PIHOLE_DOMAIN)
         builder.add_auth_token(self._auth_token)
         builder.type_all_queries()
         builder.add_from(from_timestamp)
@@ -89,7 +89,7 @@ class PiholeConsumer():
         return response
 
     def get_topclients(self, num_clients: int) -> dict:
-        builder = QueryBuilder()
+        builder = QueryBuilder(self._PIHOLE_DOMAIN)
         builder.add_auth_token(self._auth_token)
         builder.type_top_clients(num_clients)
         response = builder.query.send_request()
