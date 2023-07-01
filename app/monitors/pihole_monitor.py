@@ -87,7 +87,7 @@ def weekly_summary():
     column_names = ['timestamp_sec', 'client', 'query_type', 'domain', 'status', 'reply_type']
 
     df = pd.DataFrame(dataset, columns=column_names)
-    df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s').dt.tz_convert('Europe/Zurich')
+    df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s').dt.tz_localize('Europe/Zurich')
 
     return df
 
