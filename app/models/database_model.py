@@ -124,7 +124,7 @@ def load_user(user_id):
     return db.session.execute(db.select(User).where(User.id == user_id)).scalar_one_or_none()
 
 
-# TODO: Evaluate if this is needed or if we just use env variables
+# TODO: Evaluate if this is needed or if we just use env variables (Would need API type / Base URL / Auth type...)
 class UserApiKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
