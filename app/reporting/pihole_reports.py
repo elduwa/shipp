@@ -1,7 +1,5 @@
-import base64
 import plotly.graph_objects as go
 import plotly.express as px
-import pandas as pd
 
 
 def create_stacked_bar_chart(df):

@@ -35,7 +35,7 @@ class EmailBuilder:
         return self
 
     def add_image(self, image: MIMEImage, content_id: str | None):
-        if content_id:
+        if content_id is not None:
             image.add_header('Content-ID', f'<{content_id}>')
         self.msg.attach(image)
         return self
@@ -45,7 +45,7 @@ class EmailBuilder:
 
 
 def create_weekly_email(user: User):
-    recipient = user.email
+    recipient = user.email_address
     username = user.username
 
     text_content = "Your email client does not support HTML messages. " \
@@ -62,6 +62,7 @@ def create_weekly_email(user: User):
     msg = (
         EmailBuilder()
         .with_subject('Weekly summary')
+        .with_sender(current_app.config["MAIL_USERNAME"])
         .with_recipient(recipient)
         .with_html_content(html_content)
         .with_text_content(text_content)
@@ -87,7 +88,7 @@ def send_email(msg: MIMEMultipart):
 
 
 def generate_weekly_emails():
-    users = db.session.execute(db.select(User).where(User.email != None)).scalars().all() # noqa
+    users = db.session.execute(db.select(User).where(User.email_address != None)).scalars().all() # noqa
     for user in users:
         msg = create_weekly_email(user)
         yield msg
