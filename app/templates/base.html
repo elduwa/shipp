@@ -9,7 +9,7 @@
     <title>SHIFT - {% block title %}{% endblock %}</title>
 
     <!-- TailwindCSS -->
-    <link rel="stylesheet" href="{{url_for('static',filename='src/output.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='dist/index.css')}}">
 
     {% block head %}
     <!-- Placeholder for Other Imports -->
@@ -28,7 +28,7 @@
     </main>
 
     {%  block scripts %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.6/flowbite.min.js"></script>
+        <script src="{{ url_for('static', filename='dist/index.js') }}"></script>
         <!-- Placeholder for additional scripts -->
     {% endblock %}
 </body>
