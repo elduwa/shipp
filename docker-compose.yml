@@ -30,11 +30,11 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./nginx/:/etc/nginx/conf.d/
-      - static_volume:/opt/webapp/app/static/dist
+      - ./nginx/nginx.conf/:/etc/nginx/nginx.conf
+      - ./nginx/templates:/etc/nginx/templates
+      - static_volume:/usr/src/app/static
     environment:
       - LOCAL_NETWORK_IP_RANGE=${REV_SERVER_CIDR}
-    command: /bin/sh -c "envsubst '$$LOCAL_NETWORK_IP_RANGE' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && rm /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
   influxdb:
     container_name: influxdb
