@@ -1,25 +1,26 @@
-# Renamed and moved to /etc/nginx/nginx.conf 
+# Renamed and moved to /etc/nginx/nginx.conf
 
-upstream ba_backend {
-    server ba_backend:8000;
+upstream backend {
+    server ba-backend:8000;
 }
 
 server {
     listen 80;
+    charset utf-8;
 
     location / {
         deny all;
         allow ${LOCAL_NETWORK_IP_RANGE};
-        proxy_pass http://ba_backend;
+        proxy_pass http://backend;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-Prefix /;
     }
 
-    location /static/ {
+    location /static {
         deny all;
         allow ${LOCAL_NETWORK_IP_RANGE};
-        alias /app/app/static/;
+        alias /usr/src/app/static;
     }
 }
