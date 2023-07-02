@@ -27,6 +27,8 @@ services:
   nginx:
     container_name: nginx_reverse_proxy
     image: nginx:latest
+    depends_on:
+      - ba-backend
     ports:
       - "8080:80"
     volumes:
