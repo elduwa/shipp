@@ -16,7 +16,7 @@ def init_dashboard(server):
         server=server,
         routes_pathname_prefix='/dash/',
         external_stylesheets=["/static/dist/dashboard.css"],
-        #external_scripts=["https://cdn.tailwindcss.com"],
+        # external_scripts=["https://cdn.tailwindcss.com"],
     )
 
     # FYI, you need both an app context and a request context to use url_for() in the Jinja2 templates
@@ -45,7 +45,13 @@ def build_dashboard_layout():
     layout = html.Div(className="h-w-full",
                       children=[html.Div(className="dash-container", children=[
                           html.Div(className="graph-div", children=[
-                              dcc.Graph(className="h-w-full", figure={}, id="main-plot", responsive=True)]),
+                              dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills", color="gray",
+                                       children=[
+                                          dmc.TabsList(className="tabs-list", children=[
+                                              dmc.Tab("Total queries", value="1"),
+                                              dmc.Tab("Domains", value="2"), ]),
+                                          html.Div(className="tabs-content h-w-full", children=[
+                                              dcc.Graph(className="h-w-full", figure={}, id="main-plot", responsive=True)])])]),
                           html.Div(className="card-div", children=[
                               create_card("card-1-text", "card-1-subtext")
                           ]),
@@ -73,14 +79,14 @@ def build_dashboard_layout():
 def create_card(text_id: str, subtext_id: str):
     return dmc.Card(className="h-w-full card",
                     children=[
-                        dmc.Text(
+                        dmc.Title(
                             children={},
-                            size="xl",
+                            order=2,
                             id=text_id,
                         ),
                         dmc.Text(
                             children={},
-                            size="sm",
+                            size="md",
                             color="dimmed",
                             id=subtext_id,
                         ),
@@ -100,28 +106,44 @@ def init_callbacks(dash_app):
         Output(component_id="card-2-subtext", component_property="children"),
         Output(component_id="card-3-text", component_property="children"),
         Output(component_id="card-3-subtext", component_property="children"),
-        Input(component_id="client-multi-select", component_property="value"))
-    def update_graph(clients):
+        Input(component_id="client-multi-select", component_property="value"),
+        Input(component_id="graph-tabs", component_property="value"))
+    def update_graph(clients, tab):
         df = last_24h_summary()
         ip_set = set(clients)
         df = df[df["client"].isin(ip_set)]
         df['time_of_day'] = df['timestamp'].dt.floor('1H').dt.time
 
-        df_plot = df.groupby(["client", "time_of_day"]).agg(count=pd.NamedAgg(column="client", aggfunc="count"))
-        fig = px.histogram(df_plot, x=df_plot.index.get_level_values(1), y="count",
-                           color=df_plot.index.get_level_values(0), barmode="group", height=600)
-        fig.update_layout(dict(autosize=True))
+        fig = create_plot(df, tab)
 
         total_queries = df.count()["domain"]
         total_queries_text = "total queries"
         unique_domains = df["domain"].nunique()
         unique_domains_text = "unique domains"
-        percentage_blocked = df[df["status"].isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()["status"] / df.count()["status"]
+        percentage_blocked = df[df["status"].isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()["status"] / \
+                             df.count()["status"]
         percentage_blocked = round(percentage_blocked, 2)
         percentage_blocked = f"{percentage_blocked} %"
-        percentage_blocked_text = "of all requests were blocked"
+        percentage_blocked_text = "requests blocked"
 
         return fig, total_queries, total_queries_text, unique_domains, unique_domains_text, percentage_blocked, percentage_blocked_text
+
+    def create_plot(df, tab):
+        if tab == "1":
+            df_plot = df.groupby(["client", "time_of_day"]).agg(count=pd.NamedAgg(column="client", aggfunc="count"))
+            fig = px.histogram(df_plot, x=df_plot.index.get_level_values(1), y="count",
+                               color=df_plot.index.get_level_values(0), barmode="group", height=800)
+            fig.update_layout(dict(autosize=True))
+            return fig
+        elif tab == "2":
+            df_plot = df.groupby(["client", "domain"]).agg(
+                count=pd.NamedAgg(column="domain", aggfunc="count")).reset_index()
+            df_plot = df_plot.groupby("client").apply(lambda x: x.nlargest(10, "count")).reset_index(drop=True)
+
+            fig = px.sunburst(df_plot, path=["client", "domain"], values="count", height=800)
+            fig.update_layout(dict(autosize=True))
+            return fig
+        return None
 
 
 def get_all_clients():
