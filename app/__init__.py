@@ -9,6 +9,7 @@ def create_app(config_name: str):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
+
     if config_name == "production":
         from werkzeug.middleware.proxy_fix import ProxyFix
         app.wsgi_app = ProxyFix(
@@ -26,5 +27,8 @@ def create_app(config_name: str):
 
         from app import views
         app.register_blueprint(views.bp)
+
+        from app.dashapp.dashboard import init_dashboard
+        app = init_dashboard(app)
 
         return app

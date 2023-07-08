@@ -11,7 +11,7 @@ bp = Blueprint("main", __name__, template_folder="templates")
 
 @bp.route("/")
 def index():
-    return render_template("index.html")
+    return redirect(request.base_url + "dash/")
 
 
 @bp.route("/devices")

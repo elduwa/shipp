@@ -18,7 +18,7 @@
   "dependencies": {
     "flowbite": "^1.6.5"
   },
-  "source": "app/static/src/index.js",
+  "source": ["app/static/src/index.js", "app/static/src/dashboard.js"],
   "targets": {
     "default": {
       "distDir": "./app/static/dist"

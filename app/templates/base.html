@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -15,13 +15,11 @@
     <!-- Placeholder for Other Imports -->
     {% endblock %}
 </head>
-<body class="min-h-screen bg-gradient-to-b from-accent-1-blue-crayola from-25% via-base-french-gray via-25% to-base-french-gray">
-
-    <div class="absolute w-full bg-accent-1-blue-crayola min-h-75 dark:hidden"></div>
+<body class="min-h-screen h-full bg-fixed bg-no-repeat bg-gradient-to-b from-accent-1-blue-crayola from-25% via-base-french-gray via-25% to-base-french-gray">
 
     {% include "includes/sidebar.html" %}
 
-    <main class="sm:ml-64 sm:mt-16 p-4">
+    <main class="sm:ml-64 sm:mt-16 p-4 h-[60vh]">
         {% block content %}
         <!-- Placeholder for main content -->
         {% endblock %}
