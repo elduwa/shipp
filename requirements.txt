@@ -21,3 +21,5 @@ SQLAlchemy~=2.0.15
 pandas
 plotly
 kaleido
+dash
+dash-mantine-components

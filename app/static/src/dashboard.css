@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#react-entry-point {
+    @apply h-full min-h-screen;
+}
+
+.h-w-full {
+    @apply h-full w-full;
+}
+
+.dash-container {
+    @apply grid h-full grid-cols-4 gap-4;
+}
+
+.graph-div {
+    @apply flex justify-center items-center col-span-3 row-span-3;
+}
+
+.card-div {
+    @apply flex justify-center items-center col-span-1 row-span-1;
+}
+
+.card {
+    @apply flex justify-center items-center;
+}
+
+.multiselect-div {
+    @apply flex justify-center items-start col-span-1 row-span-1
+}
+

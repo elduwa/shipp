@@ -55,9 +55,16 @@ def fetch_query_data_job():
 
 
 def weekly_summary():
-    from_timestamp = int(datetime.now().timestamp()) - 604800
-    until_timestamp = int(datetime.now().timestamp())
+    return pihole_queries_df(int(datetime.now().timestamp()) - 604800,
+                             int(datetime.now().timestamp()))
 
+
+def last_24h_summary():
+    return pihole_queries_df(int(datetime.now().timestamp()) - 86400,
+                             int(datetime.now().timestamp()))
+
+
+def pihole_queries_df(from_timestamp: int, until_timestamp: int):
     pihole_domain = current_app.config['PIHOLE_DOMAIN']
     auth_token = current_app.config['PIHOLE_AUTH_TOKEN']
     pihole_consumer = PiholeConsumer(pihole_domain, auth_token)
