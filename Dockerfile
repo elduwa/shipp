@@ -1,3 +1,27 @@
+FROM arm64v8/python:3.11-slim-bullseye as builder
+
+WORKDIR /builder
+
+USER root
+
+# Install Node.js and npm
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install Node.js dependencies
+RUN npm install
+
+# Copy the rest of the source code
+COPY . .
+
+# Build the project
+RUN npm run build
+
+
 FROM arm64v8/python:3.11-slim-bullseye
 
 ENV FLASK_APP run.py
@@ -31,6 +55,9 @@ RUN chown -R server_runner:server_runner /opt/webapp
 
 # Switch back to non-root user
 USER server_runner
+
+# Copy built files from the builder stage
+COPY --from=builder --chown=server_runner:server_runner /builder/app/static/dist /opt/webapp/app/static/dist
 
 RUN python -m venv .venv
 RUN .venv/bin/pip install -r requirements.txt
