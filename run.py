@@ -32,8 +32,9 @@ def execute_job():
 @app.cli.command()
 def deploy():
     """Run deployment tasks."""
-    # migrate database to latest revision
-    upgrade()
+    with app.app_context():
+        # migrate database to latest revision
+        upgrade()
 
 
 @app.cli.command()
