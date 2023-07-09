@@ -37,7 +37,6 @@ USER root
 
 COPY --chown=server_runner:server_runner app app
 COPY --chown=server_runner:server_runner migrations migrations
-COPY --chown=server_runner:server_runner nginx nginx
 COPY --chown=server_runner:server_runner run.py config.py boot.sh requirements.txt ./
 
 RUN apt-get update && apt-get install -y cron
@@ -52,6 +51,7 @@ RUN echo "0 * * * * /opt/webapp/.venv/bin/flask execute-job > /opt/webapp/logs/p
 
 # Grant permissions to server_runner user for the /opt/webapp/ directory
 RUN chown -R server_runner:server_runner /opt/webapp
+RUN chmod u+x /opt/webapp/boot.sh
 
 # Switch back to non-root user
 USER server_runner
