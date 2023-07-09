@@ -21,7 +21,6 @@ def create_app(config_name: str):
 
         from app.extensions import db, login_manager
         db.init_app(app)
-        db.create_all()
         login_manager.init_app(app)
 
         logging.getLogger('sqlalchemy').addHandler(default_handler)

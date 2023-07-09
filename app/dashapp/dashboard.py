@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import dash_mantine_components as dmc
 from dash import Dash, html, dcc, Output, Input
-from flask import render_template_string
+from flask import render_template_string, current_app
 from app.extensions import db
 from app.models.database_model import Device
 from app.monitors.pihole_monitor import last_24h_summary
@@ -147,14 +147,17 @@ def init_callbacks(dash_app):
 
 
 def get_all_clients():
-    devices = db.session.execute(db.select(Device)).scalars().all()
     client_list = []
-    for device in devices:
-        name = device.device_name
-        ip = device.get_current_config().ip_address
-        if name is not None and name != "":
-            label = name
-        else:
-            label = ip
-        client_list.append({"value": f"{ip}", "label": f"{label}"})
+    try:
+        devices = db.session.execute(db.select(Device)).scalars().all()
+        for device in devices:
+            name = device.device_name
+            ip = device.get_current_config().ip_address
+            if name is not None and name != "":
+                label = name
+            else:
+                label = ip
+            client_list.append({"value": f"{ip}", "label": f"{label}"})
+    except Exception as e:
+        current_app.logger.error(f"Could not load devices: {e}")
     return client_list

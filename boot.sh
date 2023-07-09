@@ -1,19 +1,16 @@
 #!/bin/bash
 source .venv/bin/activate
 
-FILE=/opt/webapp/data/rel_db/sqlite.db
-if [ -f "$FILE" ]; then
-  echo "Migrating database..."
-  while true; do
-      flask deploy
-      if [ "$?" -eq "0" ]; then
-          break
-      fi
-      echo Deploy command failed, retrying in 5 secs...
-      sleep 5
-  done
-  echo "Database migrated"
-fi
+echo "Migrating database..."
+while true; do
+    flask deploy
+    if [ "$?" -eq "0" ]; then
+        break
+    fi
+    echo Deploy command failed, retrying in 5 secs...
+    sleep 5
+done
+echo "Database migrated"
 
 echo "Starting cron..."
 cron
