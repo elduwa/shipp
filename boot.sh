@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 source .venv/bin/activate
 
 FILE=/opt/webapp/data/rel_db/sqlite.db
-if [[ -f "$FILE" ]]; then
+if [ -f "$FILE" ]; then
   echo "Migrating database..."
   while true; do
       flask deploy
-      if [[ "$?" == "0" ]]; then
+      if [ "$?" -eq "0" ]; then
           break
       fi
       echo Deploy command failed, retrying in 5 secs...
