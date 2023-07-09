@@ -11,7 +11,10 @@ bp = Blueprint("main", __name__, template_folder="templates")
 
 @bp.route("/")
 def index():
-    return redirect(request.base_url + "dash/")
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", request.scheme)
+    forwarded_host = request.headers.get("X-Forwarded-Host", request.host)
+    base_url = f"{forwarded_proto}://{forwarded_host}"
+    return redirect(base_url + "/dash/")
 
 
 @bp.route("/devices")
