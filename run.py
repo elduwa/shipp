@@ -43,7 +43,7 @@ def execute_weekly_notifications():
     from app.reporting.email_notification_service import send_weekly_emails
     with app.app_context():
         send_weekly_emails()
-    app.logger.info("Sent all weekly notifications")
+        app.logger.info("Sent all weekly notifications")
 
 
 @app.shell_context_processor

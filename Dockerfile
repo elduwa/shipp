@@ -47,7 +47,7 @@ RUN echo "0 * * * * /opt/webapp/.venv/bin/flask execute-job > /opt/webapp/logs/p
     && crontab -u server_runner /etc/cron.d/webapp-cron \
     && mkdir -p /opt/webapp/logs \
     && touch /opt/webapp/logs/pihole_job.log /opt/webapp/logs/weekly_email_job.log \
-    && chown server_runner:server_runner /opt/webapp/logs/job.log /opt/webapp/logs/weekly_email_job.log \
+    && chown server_runner:server_runner /opt/webapp/logs/pihole_job.log /opt/webapp/logs/weekly_email_job.log \
     && chmod u+s /usr/sbin/cron
 
 # Grant permissions to server_runner user for the /opt/webapp/ directory
