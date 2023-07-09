@@ -56,6 +56,9 @@ RUN chmod u+x /opt/webapp/boot.sh
 # Switch back to non-root user
 USER server_runner
 
+RUN mkdir -p /opt/webapp/data/rel_db
+RUN mkdir -p /opt/webapp/data/pihole_etc
+
 # Copy built files from the builder stage
 COPY --from=builder --chown=server_runner:server_runner /builder/app/static/dist /opt/webapp/app/static/dist
 
