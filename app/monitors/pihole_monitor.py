@@ -57,20 +57,22 @@ def fetch_query_data_job():
 
 
 def weekly_summary():
-    return pihole_queries_df(int(datetime.now().timestamp()) - 604800,
-                             int(datetime.now().timestamp()))
+    return fetch_dns_query_data(int(datetime.now().timestamp()) - 604800,
+                                int(datetime.now().timestamp()))
 
 
 def last_24h_summary():
-    return pihole_queries_df(int(datetime.now().timestamp()) - 86400,
-                             int(datetime.now().timestamp()))
+    return fetch_dns_query_data(int(datetime.now().timestamp()) - 86400,
+                                int(datetime.now().timestamp()))
 
 
-def pihole_queries_df(from_timestamp: int, until_timestamp: int):
+def fetch_dns_query_data(from_timestamp: int, until_timestamp: int):
+    # Instantiating the PiholeConsumer
     pihole_domain = current_app.config['PIHOLE_DOMAIN']
     auth_token = current_app.config['PIHOLE_AUTH_TOKEN']
     pihole_consumer = PiholeConsumer(pihole_domain, auth_token)
 
+    # Query pihole API for DNS requests in specified time interval
     success = False
     max_retries = 2
     retries = 0
@@ -90,13 +92,13 @@ def pihole_queries_df(from_timestamp: int, until_timestamp: int):
     if not success:
         raise ConnectionError(error)
 
-    # Get all active ips from db
+    # Get all active IPs from db
     active_ips = db.session.execute(
         db.select(DeviceConfig.ip_address).where(DeviceConfig.valid_to == None)).scalars().all()  # noqa: E711
     active_ip_set = set(active_ips)
 
     dataset = []
-
+    # Process data
     for datapoint in query_data:
         client = datapoint[3]
         # Filter out data from inactive/unregistered clients
@@ -109,11 +111,11 @@ def pihole_queries_df(from_timestamp: int, until_timestamp: int):
         reply_type = datapoint[6]
         dataset.append([timestamp, client, query_type, domain, status, reply_type])
 
+    # Create pandas dataframe
     column_names = ['timestamp_sec', 'client', 'query_type', 'domain', 'status', 'reply_type']
-
     df = pd.DataFrame(dataset, columns=column_names)
-    df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s').dt.tz_localize('Europe/Zurich')
 
+    df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s').dt.tz_localize('Europe/Zurich')
     ip_name_map = get_ip_name_mapping()
     df['client_name'] = df['client'].map(lambda x: ip_name_map[x] if x in ip_name_map else x)
 

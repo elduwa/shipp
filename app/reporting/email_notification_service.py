@@ -84,6 +84,18 @@ def create_weekly_email(user: User) -> MIMEMultipart:
     return msg
 
 
+def send_weekly_emails():
+    for msg in generate_weekly_emails():
+        send_email(msg)
+
+
+def generate_weekly_emails():
+    users = db.session.execute(db.select(User).where(User.email_address != None)).scalars().all()  # noqa
+    for user in users:
+        msg = create_weekly_email(user)
+        yield msg
+
+
 def send_email(msg: MIMEMultipart):
     try:
         with smtplib.SMTP(current_app.config["MAIL_SERVER"], current_app.config["MAIL_PORT"]) as smtp:
@@ -97,13 +109,4 @@ def send_email(msg: MIMEMultipart):
     return 'Sent'
 
 
-def generate_weekly_emails():
-    users = db.session.execute(db.select(User).where(User.email_address != None)).scalars().all()  # noqa
-    for user in users:
-        msg = create_weekly_email(user)
-        yield msg
 
-
-def send_weekly_emails():
-    for msg in generate_weekly_emails():
-        send_email(msg)
