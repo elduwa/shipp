@@ -1,11 +1,12 @@
 import smtplib
+import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.header import Header
 from flask import render_template, current_app
 from app.monitors.pihole_monitor import weekly_summary
-from app.reporting.pihole_reports import figure_to_byte_img, create_stacked_bar_chart, create_horizontal_bar_chart
+from app.reporting.pihole_reports import figure_to_byte_img, create_stacked_bar_chart, create_pie_chart
 from app.models.database_model import User
 from app.extensions import db
 
@@ -44,32 +45,41 @@ class EmailBuilder:
         return self.msg
 
 
-def create_weekly_email(user: User):
+def create_weekly_email(user: User) -> MIMEMultipart:
     recipient = user.email_address
     username = user.username
 
     text_content = "Your email client does not support HTML messages. " \
                    "Please use an email client that does."
-    html_content = render_template('emails/weekly-summary.html', username=username)
 
     df = weekly_summary()
-    img_1 = figure_to_byte_img(create_stacked_bar_chart(df))
-    img_2 = figure_to_byte_img(create_horizontal_bar_chart(df))
+    top_domains = df[['client_name', "domain"]].value_counts().nlargest(10).sort_values(ascending=False)
+    top_dict = top_domains.to_dict()
 
+    html_content = render_template('emails/weekly-summary.html', username=username, top_dict=top_dict)
+
+    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+    img_path = os.path.join(basedir, 'static', 'assets', 'logo.png')
+    with open(img_path, "rb") as img_file:
+        enc_img = img_file.read()
+
+    img_1 = figure_to_byte_img(create_pie_chart(df))
+    img_2 = figure_to_byte_img(create_stacked_bar_chart(df))
+
+    logo = MIMEImage(enc_img, 'png')
     chart1 = MIMEImage(img_1, 'png')
     chart2 = MIMEImage(img_2, 'png')
 
-    msg = (
-        EmailBuilder()
-        .with_subject('Weekly summary')
-        .with_sender(current_app.config["MAIL_USERNAME"])
-        .with_recipient(recipient)
-        .with_html_content(html_content)
-        .with_text_content(text_content)
-        .add_image(chart1, "chart1")
-        .add_image(chart2, "chart2")
+    msg = EmailBuilder() \
+        .with_subject('Weekly summary') \
+        .with_sender(current_app.config["MAIL_USERNAME"]) \
+        .with_recipient(recipient) \
+        .with_html_content(html_content) \
+        .with_text_content(text_content) \
+        .add_image(logo, "logo") \
+        .add_image(chart1, "chart1") \
+        .add_image(chart2, "chart2") \
         .build()
-    )
 
     return msg
 
@@ -88,7 +98,7 @@ def send_email(msg: MIMEMultipart):
 
 
 def generate_weekly_emails():
-    users = db.session.execute(db.select(User).where(User.email_address != None)).scalars().all() # noqa
+    users = db.session.execute(db.select(User).where(User.email_address != None)).scalars().all()  # noqa
     for user in users:
         msg = create_weekly_email(user)
         yield msg

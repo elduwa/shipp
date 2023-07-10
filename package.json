@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "parcel",
-    "build": "parcel build"
+    "build": "parcel build",
+    "build-mail": "mjml app/static/src/weekly-summary.mjml -o app/templates/emails/weekly-summary.html"
   },
   "keywords": [],
   "author": "",
