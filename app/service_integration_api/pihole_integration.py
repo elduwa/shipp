@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 
 
-class Query():
+class Query:
 
     def __init__(self, base_url: str):
         self._base_url = base_url
@@ -21,13 +21,11 @@ class Query():
         return response.json()
 
 
-class QueryBuilder():
+class QueryBuilder:
 
     def __init__(self, domain):
         self.PIHOLE_API_BASE_URL = "".join(["http://", domain, "/admin/api.php"])
         self.reset()
-
-    #    self._query.add_param("auth", auth_token)
 
     def reset(self):
         self._query = Query(self.PIHOLE_API_BASE_URL)
@@ -64,7 +62,7 @@ class QueryBuilder():
         self._query.add_param("until", str(timestamp))
 
 
-class PiholeConsumer():
+class PiholeConsumer:
 
     def __init__(self, pihole_domain, auth_token: str):
         self._PIHOLE_DOMAIN = pihole_domain

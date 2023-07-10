@@ -64,9 +64,7 @@ class InfluxDBClientWrapper:
                                     error_callback=callback.error,
                                     retry_callback=callback.retry) as write_api:
 
-            """
-            Prepare batches from generator
-            """
+            # Prepare batches from generator
             batches = rx \
                 .from_iterable(self.generate_datapoints(points)) \
                 .pipe(ops.buffer_with_count(500)) \
@@ -101,7 +99,6 @@ class InfluxDBClientWrapper:
             .field("queried_domain", measurement.domain) \
             .field("status", measurement.status) \
             .time(measurement.timestamp * 1000000000)
-     #   current_app.logger.info(f"Writing measurement to InfluxDB: {point}")
         self.write_measurement("dns_queries", point)
 
     def generate_datapoints(self, measurements: Iterable[DNSQueryMeasurement]):
