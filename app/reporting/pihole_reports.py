@@ -37,6 +37,16 @@ def create_horizontal_bar_chart(df):
     return fig
 
 
+def create_pie_chart(df):
+    top_clients = df['client_name'].value_counts().nlargest(5).index.tolist()
+    # Replace other clients with "Rest"
+    df.loc[~df['client_name'].isin(top_clients), 'client_name'] = 'Rest'
+    df["count"] = 1
+
+    fig = px.pie(df, names="client_name", values="count", hole=.3)
+    return fig
+
+
 def figure_to_byte_img(figure):
     img_bytes = figure.to_image(format="png", engine="kaleido")
     return img_bytes

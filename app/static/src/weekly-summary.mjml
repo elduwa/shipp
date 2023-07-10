@@ -1,0 +1,131 @@
+<mjml>
+    <mj-head>
+        <mj-preview>Your weekly smart home privacy report.</mj-preview>
+        <mj-style inline="inline">
+            .demTable table {
+                width: 100%;
+                border: 1px solid #595959;
+                border-collapse: collapse;
+                padding: 8px;
+            }
+        </mj-style>
+        <mj-style inline="inline">
+            .demTable th {
+                border: 1px solid #595959;
+                padding: 8px;
+                background: #190178;
+                color: #ffffff;
+            }
+        </mj-style>
+        <mj-style inline="inline">
+            .demTable td {
+                border: 1px solid #595959;
+                text-align: left;
+                padding: 8px;
+                background: #fcfcfc;
+                color: #808080;
+            }
+        </mj-style>
+    </mj-head>
+    <mj-body background-color="#E1E8ED">
+        <mj-raw>
+            <!-- Header -->
+        </mj-raw>
+        <mj-section padding-bottom="0px" background-color="#190178">
+            <mj-column width="100%">
+                <mj-image src="cid:logo" width="50px"></mj-image>
+                <mj-divider padding-top="20px" padding-bottom="0px" padding-left="0px" padding-right="0px"
+                            border-width="1px" border-color="#f8f8f8"></mj-divider>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-bottom="0px" background-color="#fcfcfc">
+            <mj-column width="100%">
+                <mj-text align="center" font-size="22px" font-weight="bold" color="grey" font-family="Helvetica Neue">
+                    Hi {{username}}, here is your weekly smart home privacy report:
+                </mj-text>
+                <mj-divider padding-top="20px" padding-bottom="0px"
+                            padding-left="0px" padding-right="0px" border-width="1px"
+                            border-color="#f8f8f8"></mj-divider>
+            </mj-column>
+        </mj-section>
+        <mj-raw>
+            <!-- Article -->
+        </mj-raw>
+        <mj-section padding-bottom="0px" background-color="white">
+            <mj-column>
+                <mj-text align="center" font-size="20px" color="#808080">Activity by device</mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section background-color="white">
+            <mj-column width="100%">
+                <mj-image src="cid:chart1"></mj-image>
+            </mj-column>
+        </mj-section>
+        <mj-section background-color="white">
+            <mj-column width="100%">
+                <mj-text align="left" color="grey">Discover which of your devices were the most active in the past
+                    week.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-raw>
+            <!-- Editor -->
+        </mj-raw>
+        <mj-section padding-bottom="0px" background-color="#f3f3f3">
+            <mj-column>
+                <mj-text align="center" font-size="20px" color="rgb(165, 176, 184)">24h Distribution</mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="0" padding-bottom="0px" background-color="#f3f3f3">
+            <mj-column width="100%">
+                <mj-image src="cid:chart2"></mj-image>
+            </mj-column>
+        </mj-section>
+        <mj-section background-color="#f3f3f3" padding-top="0px" padding-bottom="30px">
+            <mj-column>
+                <mj-text align="left" color="grey">See how your devices behave during different hours of the day. The
+                    connection data of each device has been aggregated over the past week.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section background-color="#fcfcfc" padding-top="20px">
+            <mj-column>
+                <mj-text align="center" font-size="20px" color="grey">Top 10 Domains</mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section background-color="#fcfcfc" padding-top="0px">
+            <mj-column>
+                <mj-text align="left" color="grey">Here is a ranking of the top ten domains visited by your smart home
+                    devices.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section background-color="#fcfcfc" padding-top="0px">
+            <mj-column>
+                <mj-table css-class="demTable">
+                    <thead>
+                        <tr>
+                            <th>Smart Device</th>
+                            <th>Domain</th>
+                            <th>Visits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key in top_dict %}
+                        <tr>
+                            <td>{{key[0]}}</td>
+                            <td>{{key[1]}}</td>
+                            <td>{{top_dict[key]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </mj-table>
+            </mj-column>
+        </mj-section>
+        <mj-section background-color="#f3f3f3">
+            <mj-column>
+                <mj-text align="center">Check out your admin dashboard to get even more insights!</mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

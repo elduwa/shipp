@@ -1,11 +1,13 @@
+import time
+import random
+import pandas as pd
 from flask import current_app
 from app.service_integration_api import PiholeConsumer
 from app.models.influxdb_model import DNSQueryMeasurement, InfluxDBClientWrapper
-from app.models.database_model import DeviceConfig
+from app.models.database_model import DeviceConfig, Device
 from app.extensions import db
 from datetime import datetime
-import random
-import pandas as pd
+from requests.exceptions import ConnectionError
 
 
 def fetch_query_data_job():
@@ -69,8 +71,24 @@ def pihole_queries_df(from_timestamp: int, until_timestamp: int):
     auth_token = current_app.config['PIHOLE_AUTH_TOKEN']
     pihole_consumer = PiholeConsumer(pihole_domain, auth_token)
 
-    query_data = pihole_consumer.get_all_queries_ts(
-        from_timestamp, until_timestamp)['data']
+    success = False
+    max_retries = 2
+    retries = 0
+    error: ConnectionError | None = None
+    while not success and retries < max_retries:
+        try:
+            query_data = pihole_consumer.get_all_queries_ts(
+                from_timestamp, until_timestamp)['data']
+            success = True
+        except ConnectionError as e:
+            current_app.logger.error(f"Cannot connect to pihole, retry in 5 s. Error: {e}")
+            error = e
+            retries += 1
+            time.sleep(5)
+            continue
+
+    if not success:
+        raise ConnectionError(error)
 
     # Get all active ips from db
     active_ips = db.session.execute(
@@ -95,6 +113,9 @@ def pihole_queries_df(from_timestamp: int, until_timestamp: int):
 
     df = pd.DataFrame(dataset, columns=column_names)
     df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s').dt.tz_localize('Europe/Zurich')
+
+    ip_name_map = get_ip_name_mapping()
+    df['client_name'] = df['client'].map(lambda x: ip_name_map[x] if x in ip_name_map else x)
 
     return df
 
@@ -126,3 +147,15 @@ def dummy_weekly_summary():
     df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s').dt.tz_localize('UTC').dt.tz_convert('Europe/Zurich')
 
     return df
+
+
+def get_ip_name_mapping():
+    devices = db.session.execute(db.select(Device)).scalars().all()
+    ip_name_map = dict()
+    for device in devices:
+        device_config = device.get_current_config()
+        if device_config is not None:
+            ip_name_map[device_config.ip_address] = device.device_name
+        else:
+            continue
+    return ip_name_map

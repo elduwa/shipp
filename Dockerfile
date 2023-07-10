@@ -20,6 +20,7 @@ COPY . .
 
 # Build the project
 RUN npm run build
+RUN npm run build-mail
 
 
 FROM arm64v8/python:3.11-slim-bullseye
