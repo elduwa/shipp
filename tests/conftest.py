@@ -1,30 +1,27 @@
 import os
-import tempfile
-from config import config
-
+from dotenv import load_dotenv
 import pytest
-from app import create_app
-# from app.models import get_db, init_db
-
-with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
-    _data_sql = f.read().decode('utf8')
 
 
 @pytest.fixture
 def app():
-    db_fd, db_path = tempfile.mkstemp()
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+    dotenv_path = os.path.join(base_dir, ".env")
+    load_dotenv(dotenv_path)
 
-    app = create_app(config["test"]())
-    app.config.update(SQLITE_URI=f'sqlite:///{db_path}')
+    from app import create_app
 
-    # with app.app_context():
-    #     init_db()
-    #     get_db().executescript(_data_sql)
+    app = create_app("test")
+    with app.app_context():
+        from app.extensions import db
+        db.create_all()
 
     yield app
 
-    os.close(db_fd)
-    os.unlink(db_path)
+    with app.app_context():
+        from app.extensions import db
+        db.session.remove()
+        db.drop_all()
 
 
 @pytest.fixture
