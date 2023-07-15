@@ -12,10 +12,6 @@ class Query:
     def add_param(self, key: str, value: str):
         self._query_params[key] = value
 
-    def prepare_request(self) -> PreparedRequest:
-        request = Request('GET', self._base_url, params=self._query_params)
-        return request.prepare()
-
     def send_request(self) -> dict:
         response = requests.get(self._base_url, params=self._query_params)
         return response.json()
@@ -24,21 +20,17 @@ class Query:
 class QueryBuilder:
 
     def __init__(self, domain):
-        self.PIHOLE_API_BASE_URL = "".join(["http://", domain, "/admin/api.php"])
+        self.pihole_api_base_url = "".join(["http://", domain, "/admin/api.php"])
         self.reset()
 
     def reset(self):
-        self._query = Query(self.PIHOLE_API_BASE_URL)
+        self._query = Query(self.pihole_api_base_url)
 
     @property
     def query(self) -> Query:
         query = self._query
         self.reset()
         return query
-
-    """ def set_query_type(self, query_type: str):
-        if query_type not in self.QUERY_TYPES:
-            raise ValueError("Invalid query type") """
 
     def add_auth_token(self, auth_token: str):
         self._query.add_param("auth", auth_token)
@@ -65,20 +57,11 @@ class QueryBuilder:
 class PiholeConsumer:
 
     def __init__(self, pihole_domain, auth_token: str):
-        self._PIHOLE_DOMAIN = pihole_domain
+        self._pihole_domain = pihole_domain
         self._auth_token = auth_token
 
-    def get_all_queries_dt(self, from_datetime: str, until_datetime: str) -> dict:
-        builder = QueryBuilder(self._PIHOLE_DOMAIN)
-        builder.add_auth_token(self._auth_token)
-        builder.type_all_queries()
-        builder.add_from(self.datetime_str_to_timestamp(from_datetime))
-        builder.add_until(self.datetime_str_to_timestamp(until_datetime))
-        response = builder.query.send_request()
-        return response
-
     def get_all_queries_ts(self, from_timestamp: int, until_timestamp: int) -> dict:
-        builder = QueryBuilder(self._PIHOLE_DOMAIN)
+        builder = QueryBuilder(self._pihole_domain)
         builder.add_auth_token(self._auth_token)
         builder.type_all_queries()
         builder.add_from(from_timestamp)
@@ -87,7 +70,7 @@ class PiholeConsumer:
         return response
 
     def get_topclients(self, num_clients: int) -> dict:
-        builder = QueryBuilder(self._PIHOLE_DOMAIN)
+        builder = QueryBuilder(self._pihole_domain)
         builder.add_auth_token(self._auth_token)
         builder.type_top_clients(num_clients)
         response = builder.query.send_request()

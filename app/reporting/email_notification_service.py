@@ -52,6 +52,7 @@ def create_weekly_email(user: User) -> MIMEMultipart:
     text_content = "Your email client does not support HTML messages. " \
                    "Please use an email client that does."
 
+    # Get the weekly summary from pihole monitor
     df = weekly_summary()
     top_domains = df[['client_name', "domain"]].value_counts().nlargest(10).sort_values(ascending=False)
     top_dict = top_domains.to_dict()

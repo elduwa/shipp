@@ -1,3 +1,7 @@
+###########
+# BUILDER #
+###########
+
 FROM arm64v8/python:3.11-slim-bullseye as builder
 
 WORKDIR /builder
@@ -22,6 +26,10 @@ COPY . .
 RUN npm run build
 RUN npm run build-mail
 
+
+#########
+# FINAL #
+#########
 
 FROM arm64v8/python:3.11-slim-bullseye
 
