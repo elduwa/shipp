@@ -16,7 +16,6 @@ def init_dashboard(server):
         server=server,
         routes_pathname_prefix='/dash/',
         external_stylesheets=["/static/dist/dashboard.css"],
-        # external_scripts=["https://cdn.tailwindcss.com"],
     )
 
     # FYI, you need both an app context and a request context to use url_for() in the Jinja2 templates
@@ -45,11 +44,11 @@ def build_dashboard_layout():
     layout = html.Div(className="h-w-full",
                       children=[html.Div(className="dash-container", children=[
                           html.Div(className="graph-div", children=[
-                              dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills", color="gray",
+                              dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills", color="orange",
                                        children=[
                                           dmc.TabsList(className="tabs-list", children=[
-                                              dmc.Tab("Total queries", value="1"),
-                                              dmc.Tab("Domains", value="2"), ]),
+                                              dmc.Tab("Total queries", value="1", className="tab"),
+                                              dmc.Tab("Domains", value="2", className="tab"), ]),
                                           html.Div(className="tabs-content h-w-full", children=[
                                               dcc.Graph(className="h-w-full", figure={}, id="main-plot", responsive=True)])])]),
                           html.Div(className="card-div", children=[
