@@ -1,4 +1,3 @@
-from requests import Request, PreparedRequest
 import requests
 from datetime import datetime
 
