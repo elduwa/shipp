@@ -59,8 +59,8 @@ class DeviceConfig(db.Model):
 
 class Policy(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    policy_type = db.Column(db.String(64), nullable=False)
-    domain = db.Column(db.String(64))
+    policy_type = db.Column(db.Uuid, nullable=False, index=True)
+    item = db.Column(db.String(64))
     active = db.Column(db.Boolean, default=True, nullable=False)
 
     def insert_policy(self):

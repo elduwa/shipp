@@ -1,10 +1,11 @@
 # App routing
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from app.extensions import db
-from app.models.database_model import Device, DeviceConfig, User
+from app.models.database_model import Device, DeviceConfig, User, Policy
 from app.forms import DeviceForm, LoginForm, RegistrationForm
 from datetime import datetime
 from flask_login import login_required, login_user, logout_user
+from app.constants import PolicyType, DefaultPolicyValues
 
 bp = Blueprint("main", __name__, template_folder="templates")
 
@@ -34,6 +35,9 @@ def add_device():
         # Handle form submission
         device = Device(mac_address=form.mac.data, device_name=form.name.data)
         device.device_configs.append(DeviceConfig(ip_address=form.ip.data))
+        default_policy = Policy(policy_type=PolicyType.DEFAULT_POLICY.value,
+                                policy_value=DefaultPolicyValues.ALLOW_ALL.value)
+        device.policies.append(default_policy)
         device.insert_device()
         return redirect(url_for("main.devices"))
     return render_template("add-device.html", form=form)
