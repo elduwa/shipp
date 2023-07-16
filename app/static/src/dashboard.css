@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 #react-entry-point {
-    @apply h-full min-h-screen;
+    @apply h-full h-[90vh];
 }
 
 .h-w-full {
@@ -32,5 +32,9 @@
 
 .tabs-content {
     @apply pt-2 pb-8 flex justify-center items-center;
+}
+
+.tab {
+    @apply bg-white hover:bg-accent-4-orange-5 hover:text-white border-solid border-2 border-accent-4-orange-5;
 }
 

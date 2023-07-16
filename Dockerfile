@@ -22,7 +22,7 @@ RUN npm install
 # Copy the rest of the source code
 COPY . .
 
-# Build the project
+# Build the frontend dependencies
 RUN npm run build
 RUN npm run build-mail
 
