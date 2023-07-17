@@ -75,7 +75,8 @@ class PiholeConsumer:
         response = builder.query.send_request()
         return response
 
-    def datetime_str_to_timestamp(self, datetime_str):
+    @staticmethod
+    def datetime_str_to_timestamp(datetime_str):
         try:
             dt = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S %z")
 

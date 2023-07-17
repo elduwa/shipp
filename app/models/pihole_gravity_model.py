@@ -11,7 +11,7 @@ class Group(db.Model):
     description = db.Column(db.Text)
     adlists = db.relationship('AdList', secondary='adlist_by_group', backref=db.backref('groups', lazy="dynamic"),
                               lazy="dynamic")
-    domainlists = db.relationship('DomainList', secondary='domainlist_by_group',
+    domains = db.relationship('DomainList', secondary='domainlist_by_group',
                                   backref=db.backref('groups', lazy="dynamic"), lazy="dynamic")
     clients = db.relationship('Client', secondary='client_by_group', backref=db.backref('groups', lazy="dynamic"),
                               lazy="dynamic")
