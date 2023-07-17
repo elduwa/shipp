@@ -1,11 +1,12 @@
 # App routing
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from app.extensions import db
 from app.models.database_model import Device, DeviceConfig, User, Policy
 from app.forms import DeviceForm, LoginForm, RegistrationForm
 from datetime import datetime
 from flask_login import login_required, login_user, logout_user
 from app.constants import PolicyType, DefaultPolicyValues
+from app.service_integration_api import init_pihole_device, update_pihole_device
 
 bp = Blueprint("main", __name__, template_folder="templates")
 
@@ -39,7 +40,12 @@ def add_device():
                                 policy_value=DefaultPolicyValues.ALLOW_ALL.value)
         device.policies.append(default_policy)
         device.insert_device()
-        return redirect(url_for("main.devices"))
+        try:
+            init_pihole_device(device)
+        except Exception as e:
+            current_app.logger.error(f"Error while initializing pihole device: {e}", "error")
+        finally:
+            return redirect(url_for("main.devices"))
     return render_template("add-device.html", form=form)
 
 
@@ -49,15 +55,20 @@ def edit_device(device_id):
     device = db.get_or_404(Device, device_id)
     current_config = device.get_current_config()
     form = DeviceForm()
+    disable_input_field(form.mac)
     if form.validate_on_submit():
         device.device_name = form.name.data
-        device.mac_address = form.mac.data
         if current_config.ip_address != form.ip.data:
             current_config.valid_to = datetime.now()
             current_config.update_device_config()
             device.device_configs.append(DeviceConfig(ip_address=form.ip.data))
         device.update_device()
-        return redirect(url_for("main.devices"))
+        try:
+            update_pihole_device(device, current_config)
+        except Exception as e:
+            current_app.logger.error(f"Error while updating pihole device: {e}", "error")
+        finally:
+            return redirect(url_for("main.devices"))
     form.name.data = device.device_name
     form.mac.data = device.mac_address
     form.ip.data = current_config.ip_address
@@ -97,3 +108,9 @@ def register():
         user.insert_user()
         return redirect(url_for("main.login"))
     return render_template("register.html", form=form)
+
+
+def disable_input_field(input_field):
+    if input_field.render_kw is None:
+        input_field.render_kw = {}
+    input_field.render_kw["disabled"] = "disabled"
