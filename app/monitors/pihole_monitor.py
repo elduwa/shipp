@@ -3,8 +3,8 @@ import random
 import pandas as pd
 from flask import current_app
 from app.service_integration_api import PiholeConsumer
-from app.models.influxdb_model import DNSQueryMeasurement, InfluxDBClientWrapper
-from app.models.database_model import DeviceConfig, Device
+from app.models import DNSQueryMeasurement, InfluxDBClientWrapper
+from app.models import DeviceConfig, Device
 from app.extensions import db
 from datetime import datetime
 from requests.exceptions import ConnectionError

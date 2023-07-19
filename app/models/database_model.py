@@ -62,6 +62,7 @@ class Policy(db.Model):
     policy_type = db.Column(db.Uuid, nullable=False, index=True)
     item = db.Column(db.String(64))
     active = db.Column(db.Boolean, default=True, nullable=False)
+    confirmed = db.Column(db.Boolean, default=False, nullable=False)
 
     def insert_policy(self):
         db.session.add(self)

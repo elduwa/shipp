@@ -22,8 +22,8 @@ def create_app(config_name: str):
         from app.extensions import db, login_manager
         db.init_app(app)
         login_manager.init_app(app)
-
         logging.getLogger('sqlalchemy').addHandler(default_handler)
+        import app.models as models
 
         from app import views
         app.register_blueprint(views.bp)

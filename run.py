@@ -8,7 +8,6 @@ if os.path.exists(dotenv_path):
 from app import create_app
 from flask_migrate import upgrade
 from app.extensions import db, migrate
-from app.models.database_model import Device, DeviceConfig, Policy
 
 current_config: str = None
 
@@ -48,8 +47,9 @@ def execute_weekly_notifications():
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db, Device=Device,
-                DeviceConfig=DeviceConfig, Policy=Policy)
+    from app.models import Device, Policy, DeviceConfig, User, Client, Group, DomainList
+    return dict(db=db, Device=Device, DeviceConfig=DeviceConfig, Policy=Policy, User=User, Client=Client, Group=Group,
+                DomainList=DomainList)
 
 
 if __name__ == '__main__':
