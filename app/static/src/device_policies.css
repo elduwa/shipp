@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.allow-td > .radio-label {
+    @apply border-green-400 text-green-400 peer-checked:bg-green-400 peer-checked:text-white;
+}
+
+.block-td > .radio-label {
+    @apply border-red-600 text-red-600 peer-checked:bg-red-600 peer-checked:text-white;
+}
+
+.radio-label {
+    @apply w-full inline-block px-5 py-3 text-center border-2 rounded;
+}
+
+
+.success-msg {
+    @apply flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800;
+}
+
+.error-msg {
+    @apply flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800;
+}

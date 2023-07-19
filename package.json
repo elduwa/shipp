@@ -22,7 +22,8 @@
   },
   "source": [
     "app/static/src/index.js",
-    "app/static/src/dashboard.js"
+    "app/static/src/dashboard.js",
+    "app/static/src/device_policies.js"
   ],
   "targets": {
     "default": {
