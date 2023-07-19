@@ -5,7 +5,7 @@ import dash_mantine_components as dmc
 from dash import Dash, html, dcc, Output, Input
 from flask import render_template_string, current_app
 from app.extensions import db
-from app.models.database_model import Device
+from app.models import Device
 from app.monitors.pihole_monitor import last_24h_summary
 
 

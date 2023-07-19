@@ -7,7 +7,7 @@ from email.header import Header
 from flask import render_template, current_app
 from app.monitors.pihole_monitor import weekly_summary
 from app.reporting.pihole_reports import figure_to_byte_img, create_stacked_bar_chart, create_pie_chart
-from app.models.database_model import User
+from app.models import User
 from app.extensions import db
 
 

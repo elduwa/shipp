@@ -1,6 +1,6 @@
 from app.extensions import db
-from app.models.pihole_gravity_model import Group, DomainList, Client
-from app.models.database_model import Device, DeviceConfig
+from app.models import Group, DomainList, Client
+from app.models import Device, DeviceConfig
 
 
 def init_pihole_device(device: Device) -> Group:
@@ -18,9 +18,11 @@ def init_pihole_device(device: Device) -> Group:
 
 def _is_device_initialized(device: Device) -> bool:
     """Check if a pihole client and group for a device exists"""
-    group = db.session.execute(db.select(Group).where(Group.name == device.mac_address)).scalars().one_or_none()
+    mac_address = device.mac_address
+    ip = device.get_current_config().ip_address
+    group = db.session.execute(db.select(Group).where(Group.name == mac_address)).scalars().first()
     client = db.session.execute(
-        db.select(Client).where(Client.ip == device.get_current_config().ip_address)).scalars().one_or_none()
+        db.select(Client).where(Client.ip == ip)).scalars().first()
     if client is not None and group is not None:
         return group.clients.contains(client)
     else:
