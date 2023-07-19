@@ -17,3 +17,11 @@
 .form-input-checkbox {
     @apply w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring focus:ring-accent-2-space-cadet dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-accent-2-space-cadet dark:ring-offset-gray-800;
 }
+
+.inactive-col {
+    @apply bg-gray-200
+}
+
+.active-col {
+    @apply bg-white
+}

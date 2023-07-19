@@ -1,7 +1,7 @@
 # App routing
-from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app, abort
 from app.extensions import db
-from app.models.database_model import Device, DeviceConfig, User, Policy
+from app.models import Device, DeviceConfig, User, Policy
 from app.forms import DeviceForm, LoginForm, RegistrationForm
 from datetime import datetime
 from flask_login import login_required, login_user, logout_user
@@ -43,7 +43,7 @@ def add_device():
         try:
             init_pihole_device(device)
         except Exception as e:
-            current_app.logger.error(f"Error while initializing pihole device: {e}", "error")
+            current_app.logger.error(f"Error while initializing pihole device: {e}")
         finally:
             return redirect(url_for("main.devices"))
     return render_template("add-device.html", form=form)
@@ -55,7 +55,6 @@ def edit_device(device_id):
     device = db.get_or_404(Device, device_id)
     current_config = device.get_current_config()
     form = DeviceForm()
-    disable_input_field(form.mac)
     if form.validate_on_submit():
         device.device_name = form.name.data
         if current_config.ip_address != form.ip.data:
@@ -66,11 +65,12 @@ def edit_device(device_id):
         try:
             update_pihole_device(device, current_config)
         except Exception as e:
-            current_app.logger.error(f"Error while updating pihole device: {e}", "error")
+            current_app.logger.error(f"Error while updating pihole device: {e}")
         finally:
             return redirect(url_for("main.devices"))
     form.name.data = device.device_name
     form.mac.data = device.mac_address
+    #disable_input_field(form.mac)
     form.ip.data = current_config.ip_address
     return render_template("edit-device.html", form=form)
 
@@ -110,7 +110,71 @@ def register():
     return render_template("register.html", form=form)
 
 
+@bp.route("/device-policies")
+@login_required
+def device_policies_overview():
+    default_device = db.first_or_404(db.select(Device))
+    return redirect(url_for("main.device_policies", device_id=default_device.id))
+
+
+@bp.route("/device-policies/<int:device_id>", methods=["GET", "POST"])
+@login_required
+def device_policies(device_id):
+    if request.method == 'POST':
+        # Handle changes to policies
+        data = request.json
+        policy_updates = _map_policy_data(data)
+        try:
+            db.session.execute(db.update(Policy), policy_updates)
+        except Exception as e:
+            current_app.logger.error(f"Error while updating policies: {e}")
+            db.session.rollback()
+            flash("Error while updating policies.", "error")
+            abort(500, "Error while updating policies.")
+        return redirect(url_for("main.device_policies", device_id=device_id))
+
+    device = db.get_or_404(Device, device_id)
+    all_devices = db.session.execute(db.select(Device)).scalars().all()
+    db_policies = device.policies
+    default_policy = None
+    policies = []
+    for db_policy in db_policies:
+        if not db_policy.active:
+            continue
+        if db_policy.policy_type == PolicyType.DEFAULT_POLICY.value:
+            default_policy = db_policy.item
+            continue
+
+        policy = dict()
+        policy["id"] = db_policy.id
+        if db_policy.policy_type == PolicyType.ALLOW.value:
+            policy["type"] = "allow"
+        elif db_policy.policy_type == PolicyType.BLOCK.value:
+            policy["type"] = "block"
+        policy["domain"] = db_policy.item
+        policy["confirmed"] = db_policy.confirmed
+        policies.append(policy)
+
+    return render_template("policies/device-policies.html", device=device, all_devices=all_devices, policies=policies,
+                           default_policy=default_policy)
+
+
 def disable_input_field(input_field):
     if input_field.render_kw is None:
         input_field.render_kw = {}
     input_field.render_kw["disabled"] = "disabled"
+
+
+def _map_policy_data(data):
+    policies = []
+    for dp in data:
+        policy = dict()
+        policy["id"] = dp.id
+        if dp.policy_type == "allow":
+            policy["policy_type"] = PolicyType.ALLOW.value
+        elif dp.policy_type == "block":
+            policy["policy_type"] = PolicyType.BLOCK.value
+        policy["item"] = dp.domain
+        policy["confirmed"] = dp.confirmed
+        policies.append(policy)
+    return policies
