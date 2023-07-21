@@ -1,6 +1,6 @@
 services:
-  ba-backend:
-    container_name: ba-backend
+  ba-webapp:
+    container_name: ba-webapp
     image: your-docker-hub-username/your-repo-name:your-image-tag
     expose:
       - 8000
@@ -26,9 +26,9 @@ services:
 
   nginx:
     container_name: nginx_reverse_proxy
-    image: nginx:latest
+    image: nginx:stable-bullseye
     depends_on:
-      - ba-backend
+      - ba-webapp
     ports:
       - "8080:80"
     volumes:

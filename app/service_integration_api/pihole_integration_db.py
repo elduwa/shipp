@@ -24,7 +24,7 @@ def _is_device_initialized(device: Device) -> bool:
     client = db.session.execute(
         db.select(Client).where(Client.ip == ip)).scalars().first()
     if client is not None and group is not None:
-        return group.clients.contains(client)
+        return client in group.clients
     else:
         return False
 

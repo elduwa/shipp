@@ -31,6 +31,7 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     # Mounted pi-hole db
+    SQLALCHEMY_ECHO = True
     SQLALCHEMY_BINDS = {
         "pihole": os.getenv('PIHOLE_DB_URL')
     }

@@ -8,6 +8,7 @@ from app.models import DeviceConfig, Device
 from app.extensions import db
 from datetime import datetime
 from requests.exceptions import ConnectionError
+from app.signals import sigs
 
 
 def fetch_query_data_job():
@@ -32,6 +33,12 @@ def fetch_query_data_job():
 
     influxdb_client.store_dns_query_measurements_batch(
         dns_query_measurements)
+
+    evaluate_monitoring_signal = sigs.signal("evaluate_monitoring_signal")
+    with current_app.app_context():
+        evaluate_monitoring_signal.send(
+            current_app._get_current_object(), dataset=dataset)
+    current_app.logger.info('finished job...')
 
 
 def weekly_summary():
@@ -83,6 +90,7 @@ def fetch_dns_query_data(from_timestamp: int, until_timestamp: int):
         client = datapoint[3]
         # Filter out data from inactive/unregistered clients
         if client not in active_ip_set:
+
             continue
         timestamp = int(datapoint[0])
         query_type = datapoint[1]
