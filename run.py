@@ -24,8 +24,9 @@ migrate.init_app(app, db)
 @app.cli.command()
 def execute_job():
     """Run scheduled job"""
-    from app.monitors.pihole_monitor import fetch_query_data_job
-    fetch_query_data_job()
+    with app.app_context():
+        from app.monitors.pihole_monitor import fetch_query_data_job
+        fetch_query_data_job()
 
 
 @app.cli.command()
