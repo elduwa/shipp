@@ -63,6 +63,7 @@ class Policy(db.Model):
     item = db.Column(db.String(64))
     active = db.Column(db.Boolean, default=True, nullable=False)
     confirmed = db.Column(db.Boolean, default=False, nullable=False)
+    date_modified = db.Column(db.Integer, nullable=False, default=db.func.strftime('%s', 'now'), onupdate=db.func.strftime('%s', 'now'))
 
     def insert_policy(self):
         db.session.add(self)
