@@ -46,6 +46,15 @@ def execute_weekly_notifications():
         app.logger.info("Sent all weekly notifications")
 
 
+@app.cli.command()
+def db_reset():
+    """Reset database"""
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        app.logger.info("Database reset")
+
+
 @app.shell_context_processor
 def make_shell_context():
     from app.models import Device, Policy, DeviceConfig, User, Client, Group, DomainList
