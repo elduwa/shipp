@@ -5,6 +5,7 @@
 
 {% block head %}
     {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static',filename='dist/device_policies.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -18,11 +19,21 @@
                             <th scope="col" class="px-6 py-3">
                                 Domain
                             </th>
-                            <th scope="col" class="px-6 py-3 inactive-col">
-
-                            </th>
-                            <th scope="col" class="px-6 py-3 inactive-col">
-
+                            <th colspan="2" scope="col" class="px-6 py-3">
+                                <div id="lock-container" class="flex items-center justify-center cursor-pointer">
+                                    <svg id="lock-closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                         class="w-5 h-5">
+                                        <path fill-rule="evenodd"
+                                              d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z"
+                                              clip-rule="evenodd"/>
+                                    </svg>
+                                    <svg id="lock-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                         fill="currentColor" class="w-5 h-5 hidden">
+                                        <path fill-rule="evenodd"
+                                              d="M14.5 1A4.5 4.5 0 0010 5.5V9H3a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-1.5V5.5a3 3 0 116 0v2.75a.75.75 0 001.5 0V5.5A4.5 4.5 0 0014.5 1z"
+                                              clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
                             </th>
                         </tr>
                         </thead>
@@ -32,21 +43,43 @@
                         {% else %}
                             {% set default = "block" %}
                         {% endif %}
-                        <tbody data-defaultPolicy="{{ default }}">
+                        <tbody data-default-policy="{{ default }}">
                         {% for policy in policies %}
-                            <tr data-policyId="{{ policy.id }}" data-policyConfirmed="{{ policy.confirmed }}"
+                            <tr data-policy-id="{{ policy.id }}" data-policy-confirmed="{{ policy.confirmed }}"
                                 class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-2">
                                     {{ policy.domain }}
                                 </td>
-                                <td class="px-1 py-1 allow-td">
-                                    <input class="hidden peer" type="radio" name="a-b-{{ policy.id }}" value="allow">
-                                    <label class="radio-label" for="allow">Allow</label>
+                                {% if not policy.confirmed %}
+                                <td class="px-6 py-2 allow-td">
+                                    <input id="a-{{ policy.id }}" class="hidden peer/allow" type="radio" name="a-b-{{ policy.id }}" value="allow">
+                                    <label class="radio-label border-green-400 text-green-400 peer-checked/allow:bg-green-400 peer-checked/allow:text-white" for="a-{{ policy.id }}">Allow</label>
                                 </td>
-                                <td class="px-6 py-4 block-td">
-                                    <input class="hidden peer" type="radio" name="a-b-{{ policy.id }}" value="block">
-                                    <label class="radio-label" for="block">Block</label>
+                                <td class="px-6 py-2 block-td">
+                                    <input id="b-{{ policy.id }}" class="hidden peer/block" type="radio" name="a-b-{{ policy.id }}" value="block">
+                                    <label class="radio-label border-red-600 text-red-600 peer-checked/block:bg-red-600 peer-checked/block:text-white" for="b-{{ policy.id }}">Block</label>
                                 </td>
+                                {% else %}
+                                    {% if policy.type == "allow" %}
+                                        <td class="px-6 py-2 allow-td">
+                                            <input id="a-{{ policy.id }}" class="hidden peer/allow" type="radio" name="a-b-{{ policy.id }}" value="allow" checked>
+                                            <label class="radio-label border-green-400 text-green-400 peer-checked/allow:bg-green-400 peer-checked/allow:text-white" for="a-{{ policy.id }}">Allow</label>
+                                        </td>
+                                        <td class="px-6 py-2 block-td">
+                                            <input id="b-{{ policy.id }}" class="hidden peer/block" type="radio" name="a-b-{{ policy.id }}" value="block">
+                                            <label class="radio-label border-red-600 text-red-600 peer-checked/block:bg-red-600 peer-checked/block:text-white" for="b-{{ policy.id }}">Block</label>
+                                        </td>
+                                    {% else %}
+                                        <td class="px-6 py-2 allow-td">
+                                            <input id="a-{{ policy.id }}" class="hidden peer/allow" type="radio" name="a-b-{{ policy.id }}" value="allow">
+                                            <label class="radio-label border-green-400 text-green-400 peer-checked/allow:bg-green-400 peer-checked/allow:text-white" for="a-{{ policy.id }}">Allow</label>
+                                        </td>
+                                        <td class="px-6 py-2 block-td">
+                                            <input id="b-{{ policy.id }}" class="hidden peer/block" type="radio" name="a-b-{{ policy.id }}" value="block" checked>
+                                            <label class="radio-label border-red-600 text-red-600 peer-checked/block:bg-red-600 peer-checked/block:text-white" for="b-{{ policy.id }}">Block</label>
+                                        </td>
+                                    {% endif %}
+                                {% endif %}
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -59,7 +92,7 @@
                     <select id="underline_select"
                             class="block py-2.5 px-0 w-full text-sm text-orange-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
                         {% for dev in all_devices %}
-                        {% set name = dev.device_name %}
+                            {% set name = dev.device_name %}
                             {% if name is none or name == "" %}
                                 {% set name = dev.mac_address %}
                             {% endif %}
@@ -87,7 +120,7 @@
                         </div>
                         <div class="flex flex-col pt-3">
                             <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Active policies</dt>
-                            <dd class="text-lg font-semibold">{{ policies|length}}</dd>
+                            <dd class="text-lg font-semibold">{{ policies|length }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -96,6 +129,7 @@
                             class="focus:outline-none text-white bg-accent-3-orange-4 hover:bg-accent-4-orange-5 focus:ring-4 focus:ring-accent-3-orange-2 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900">
                         Edit policies
                     </button>
+                    <button id="cancelBtn" type="button" class="hidden py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancel</button>
                 </div>
                 <div id="successMsg" class="success-msg hidden"
                      role="alert">

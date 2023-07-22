@@ -37,7 +37,7 @@ def add_device():
         device = Device(mac_address=form.mac.data, device_name=form.name.data)
         device.device_configs.append(DeviceConfig(ip_address=form.ip.data))
         default_policy = Policy(policy_type=PolicyType.DEFAULT_POLICY.value,
-                                policy_value=DefaultPolicyValues.ALLOW_ALL.value)
+                                item=DefaultPolicyValues.ALLOW_ALL.value)
         device.policies.append(default_policy)
         device.insert_device()
         try:
@@ -126,6 +126,7 @@ def device_policies(device_id):
         policy_updates = _map_policy_data(data)
         try:
             db.session.execute(db.update(Policy), policy_updates)
+            db.session.commit()
         except Exception as e:
             current_app.logger.error(f"Error while updating policies: {e}")
             db.session.rollback()
@@ -169,12 +170,12 @@ def _map_policy_data(data):
     policies = []
     for dp in data:
         policy = dict()
-        policy["id"] = dp.id
-        if dp.policy_type == "allow":
+        policy["id"] = dp["id"]
+        if dp["type"] == "allow":
             policy["policy_type"] = PolicyType.ALLOW.value
-        elif dp.policy_type == "block":
+        elif dp["type"] == "block":
             policy["policy_type"] = PolicyType.BLOCK.value
-        policy["item"] = dp.domain
-        policy["confirmed"] = dp.confirmed
+        policy["item"] = dp["domain"]
+        policy["confirmed"] = dp["confirmed"]
         policies.append(policy)
     return policies
