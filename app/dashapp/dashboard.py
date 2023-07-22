@@ -106,12 +106,21 @@ def init_callbacks(dash_app):
         Output(component_id="card-3-text", component_property="children"),
         Output(component_id="card-3-subtext", component_property="children"),
         Input(component_id="client-multi-select", component_property="value"),
+        Input(component_id="client-multi-select", component_property="data"),
         Input(component_id="graph-tabs", component_property="value"))
-    def update_graph(clients, tab):
+    def update_graph(client_ips, ip_label_list, tab):
         df = last_24h_summary()
-        ip_set = set(clients)
+        ip_set = set(client_ips)
+        ip_to_label = dict()
+        for ip_label in ip_label_list:
+            if ip_label["label"] in ip_to_label.values():
+                ip_to_label[ip_label["value"]] = ip_label["label"] + " (" + ip_label["value"] + ")"
+            else:
+                ip_to_label[ip_label["value"]] = ip_label["label"]
+
         df = df[df["client"].isin(ip_set)]
         df['time_of_day'] = df['timestamp'].dt.floor('1H').dt.time
+        df["client_label"] = df["client"].map(ip_to_label)
 
         fig = create_plot(df, tab)
 
@@ -129,25 +138,25 @@ def init_callbacks(dash_app):
 
     def create_plot(df, tab):
         if tab == "1":
-            df_plot = df.groupby(["client", "time_of_day"]).agg(count=pd.NamedAgg(column="client", aggfunc="count"))
+            df_plot = df.groupby(["client_label", "time_of_day"]).agg(count=pd.NamedAgg(column="client_label", aggfunc="count"))
             fig = px.histogram(df_plot, x=df_plot.index.get_level_values(1), y="count",
                                color=df_plot.index.get_level_values(0), barmode="group", height=800)
             fig.update_layout(dict(autosize=True))
             return fig
         elif tab == "2":
-            df_plot = df.groupby(["client", "domain"]).agg(
+            df_plot = df.groupby(["client_label", "domain"]).agg(
                 count=pd.NamedAgg(column="domain", aggfunc="count")).reset_index()
-            df_plot = df_plot.groupby("client").apply(lambda x: x.nlargest(10, "count")).reset_index(drop=True)
+            df_plot = df_plot.groupby("client_label").apply(lambda x: x.nlargest(10, "count")).reset_index(drop=True)
 
-            fig = px.sunburst(df_plot, path=["client", "domain"], values="count", height=800)
+            fig = px.sunburst(df_plot, path=["client_label", "domain"], values="count", height=800)
             fig.update_layout(dict(autosize=True))
             return fig
         return None
 
 
 def get_all_clients():
-    client_list = []
     try:
+        client_list = []
         devices = db.session.execute(db.select(Device)).scalars().all()
         for device in devices:
             name = device.device_name
@@ -157,6 +166,7 @@ def get_all_clients():
             else:
                 label = ip
             client_list.append({"value": f"{ip}", "label": f"{label}"})
+        db.session.commit()
+        return client_list
     except Exception as e:
         current_app.logger.error(f"Could not load devices: {e}")
-    return client_list
