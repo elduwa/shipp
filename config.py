@@ -13,6 +13,8 @@ class Config:
     PIHOLE_DOMAIN = os.getenv('PIHOLE_DOMAIN')
     PIHOLE_DB_URL = os.getenv('PIHOLE_DB_URL')
     PIHOLE_AUTH_TOKEN = os.getenv('PIHOLE_AUTH_TOKEN')
+    INFLUXDB_ACTIVE = os.getenv('INFLUXDB_ACTIVE').lower() in ('true', '1', 't') if os.getenv(
+        'INFLUXDB_ACTIVE') is not None else False
     INFLUXDB_URL = os.getenv('INFLUXDB_URL')
     INFLUXDB_AUTH_TOKEN = os.getenv('INFLUXDB_AUTH_TOKEN')
     INFLUXDB_BUCKET = os.getenv('INFLUXDB_BUCKET')

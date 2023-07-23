@@ -13,26 +13,31 @@ from app.constants import DataSource
 
 def fetch_query_data_job():
     current_app.logger.info('starting job...')
-    # Load latest record from influxdb and find timestamp
-    influxdb_client = InfluxDBClientWrapper()
-    latest_timestamp = influxdb_client.get_latest_timestamp("dns_queries")
-    from_timestamp = datetime.now().timestamp() - current_app.config['SCHEDULER_TIMEINTERVAL'] \
-        if latest_timestamp == -1 else latest_timestamp
+
+    influx_active = current_app.config["INFLUXDB_ACTIVE"]
+    from_timestamp = datetime.now().timestamp() - current_app.config['SCHEDULER_TIMEINTERVAL']
     until_timestamp = int(datetime.now().timestamp())
+    if influx_active:
+        # Load latest record from influxdb and find timestamp
+        influxdb_client = InfluxDBClientWrapper()
+        latest_timestamp = influxdb_client.get_latest_timestamp("dns_queries")
+        from_timestamp = from_timestamp if latest_timestamp == -1 else latest_timestamp
+
 
     # fetch dns query data from pihole
     dataset = fetch_dns_query_data(from_timestamp, until_timestamp)
 
-    # map to influxdb model
-    dns_query_measurements = list(map(
-        lambda x: DNSQueryMeasurement(x[0], x[1], x[2], x[5], x[3], x[4]), dataset)
-    )
+    if influx_active:
+        # map to influxdb model
+        dns_query_measurements = list(map(
+            lambda x: DNSQueryMeasurement(x[0], x[1], x[2], x[5], x[3], x[4]), dataset)
+        )
 
-    current_app.logger.info(
-        f"Writing {len(dns_query_measurements)} new datapoints to influxdb...")
+        current_app.logger.info(
+            f"Writing {len(dns_query_measurements)} new datapoints to influxdb...")
 
-    influxdb_client.store_dns_query_measurements_batch(
-        dns_query_measurements)
+        influxdb_client.store_dns_query_measurements_batch(
+            dns_query_measurements)
 
     evaluate_monitoring_signal = sigs.signal("evaluate_monitoring_signal")
     with current_app.app_context():
