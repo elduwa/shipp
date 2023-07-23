@@ -23,7 +23,7 @@ def evaluate_monitoring_data(dataset: list):
 def evaluate_device_policies(device_ip: str, domains: set) -> (int, list):
     try:
         device = db.session.execute(db.select(Device).join(Device.device_configs).where(
-            DeviceConfig.ip_address == device_ip and DeviceConfig.valid_to == None)).scalars().one_or_none()
+            DeviceConfig.ip_address == device_ip and DeviceConfig.valid_to == None)).scalars().one_or_none() # noqa E711
         if device is None:
             raise Exception(f"Device with ip {device_ip} not found")
         device_policies = device.policies
