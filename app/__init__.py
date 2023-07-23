@@ -23,7 +23,7 @@ def create_app(config_name: str):
         db.init_app(app)
         login_manager.init_app(app)
         logging.getLogger('sqlalchemy').addHandler(default_handler)
-        import app.models as models
+        import app.models as models # noqa F401
 
         from app import views
         app.register_blueprint(views.bp)
