@@ -57,9 +57,9 @@ def db_reset():
 
 @app.shell_context_processor
 def make_shell_context():
-    from app.models import Device, Policy, DeviceConfig, User, Client, Group, DomainList
+    from app.models import Device, Policy, DeviceConfig, User, Client, Group, Domainlist
     return dict(db=db, Device=Device, DeviceConfig=DeviceConfig, Policy=Policy, User=User, Client=Client, Group=Group,
-                DomainList=DomainList)
+                Domainlist=Domainlist)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models import Group, DomainList, Client
+from app.models import Group, Domainlist, Client
 from app.models import Device, DeviceConfig
 
 
@@ -58,17 +58,17 @@ def delete_pihole_device(device: Device):
 
 def block_domain(device: Device, domain_name: str):
     """Block a domain for a device"""
-    domain = DomainList(type=1, domain=domain_name)
+    domain = Domainlist(type=1, domain=domain_name)
     _add_domain_to_device_group(device, domain)
 
 
 def whitelist_domain(device: Device, domain_name: str):
     """Allow a domain for a device"""
-    domain = DomainList(type=0, domain=domain_name)
+    domain = Domainlist(type=0, domain=domain_name)
     _add_domain_to_device_group(device, domain)
 
 
-def _add_domain_to_device_group(device: Device, domain: DomainList):
+def _add_domain_to_device_group(device: Device, domain: Domainlist):
     """Add a domain to a pihole group"""
     if not _is_device_initialized(device):
         init_pihole_device(device)

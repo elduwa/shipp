@@ -24,7 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
     saveBtn.addEventListener("click", function () {
         if (radioClicked) {
             const data = getTableData();
-            sendPOSTRequest(data);
+            sendPOSTRequest(data)
+                .then(response => {
+                    successMsg.className = "success-msg flex";
+                });
         }
         radioClicked = false;
         editBtn.style.display = "block";
@@ -95,11 +98,8 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
         }
         else {
-            sendGetRequest(event.target.value)
-                .then(response => {
-                    window.location = response.url;
-                    window.location.reload();
-                })
+            const deviceId = event.target.value;
+            window.location.href = replaceDeviceIdInUrl(window.current_endpoint, deviceId);
         }
     });
 
@@ -148,11 +148,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (response.redirected) {
                 window.location = response.url;
-                successMsg.className = "success-msg flex";
             } else {
                 throw new Error(`Redirect failed! status: ${response.status}`);
             }
             console.log("Changes saved successfully!");
+            return response;
         } catch (error) {
             console.error(error);
             errorMsg.className = "error-msg flex";
@@ -182,6 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             console.log("Loaded policies for device " + deviceId ? deviceId : underline_select.value);
+            return response;
         } catch (error) {
             console.error(error);
         }
