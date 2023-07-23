@@ -24,6 +24,7 @@ services:
       - MAIL_PORT=<your_mail_port>
       - MAIL_USERNAME=<your_mail_username>
       - MAIL_PASSWORD=<your_mail_password>
+      - SCHEDULER_TIMEINTERVAL=3600
 
   nginx:
     container_name: nginx_reverse_proxy

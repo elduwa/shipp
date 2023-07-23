@@ -7,7 +7,7 @@ if os.path.exists(dotenv_path):
 
 from app import create_app
 from flask_migrate import upgrade
-from app.extensions import db, migrate
+from app.extensions import db
 
 current_config: str = None
 
@@ -18,7 +18,7 @@ else:
 
 app = create_app(current_config)
 
-migrate.init_app(app, db)
+
 
 
 @app.cli.command()
@@ -32,9 +32,8 @@ def execute_job():
 @app.cli.command()
 def deploy():
     """Run deployment tasks."""
-    with app.app_context():
-        # migrate database to latest revision
-        upgrade()
+    # migrate database to latest revision
+    upgrade()
 
 
 @app.cli.command()

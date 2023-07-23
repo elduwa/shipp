@@ -4,6 +4,7 @@ from config import config
 import logging
 from flask.logging import default_handler
 from sqlalchemy_utils.functions import database_exists
+from flask_migrate import stamp
 
 
 def create_app(config_name: str):
@@ -20,14 +21,17 @@ def create_app(config_name: str):
     with app.app_context():
         app.logger.setLevel(logging.INFO)
 
-        from app.extensions import db, login_manager
+        from app.extensions import db, login_manager, migrate
         db.init_app(app)
         login_manager.init_app(app)
         logging.getLogger('sqlalchemy').addHandler(default_handler)
         import app.models as models # noqa F401
 
+        migrate.init_app(app, db)
+
         if not database_exists(app.config["SQLALCHEMY_DATABASE_URI"]):
             db.create_all()
+            stamp()
             app.logger.info("Database created")
 
         from app import views
