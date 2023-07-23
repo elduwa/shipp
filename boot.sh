@@ -15,6 +15,7 @@ if [ -f "$database_file" ]; then
         sleep 5
     done
     echo "Database migrated"
+fi
 
 echo "Starting cron..."
 cron
