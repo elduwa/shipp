@@ -3,6 +3,7 @@ from flask import Flask
 from config import config
 import logging
 from flask.logging import default_handler
+from sqlalchemy_utils.functions import database_exists
 
 
 def create_app(config_name: str):
@@ -24,6 +25,10 @@ def create_app(config_name: str):
         login_manager.init_app(app)
         logging.getLogger('sqlalchemy').addHandler(default_handler)
         import app.models as models # noqa F401
+
+        if not database_exists(app.config["SQLALCHEMY_DATABASE_URI"]):
+            db.create_all()
+            app.logger.info("Database created")
 
         from app import views
         app.register_blueprint(views.bp)

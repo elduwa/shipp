@@ -15,11 +15,6 @@ if [ -f "$database_file" ]; then
         sleep 5
     done
     echo "Database migrated"
-else
-    echo "Creating database..."
-    flask db create-all
-    echo "Database created"
-fi
 
 echo "Starting cron..."
 cron

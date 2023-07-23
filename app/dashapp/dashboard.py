@@ -44,13 +44,15 @@ def build_dashboard_layout():
     layout = html.Div(className="h-w-full",
                       children=[html.Div(className="dash-container", children=[
                           html.Div(className="graph-div", children=[
-                              dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills", color="orange",
+                              dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills",
+                                       color="orange",
                                        children=[
-                                          dmc.TabsList(className="tabs-list", children=[
-                                              dmc.Tab("Total queries", value="1", className="tab"),
-                                              dmc.Tab("Domains", value="2", className="tab"), ]),
-                                          html.Div(className="tabs-content h-w-full", children=[
-                                              dcc.Graph(className="h-w-full", figure={}, id="main-plot", responsive=True)])])]),
+                                           dmc.TabsList(className="tabs-list", children=[
+                                               dmc.Tab("Total queries", value="1", className="tab"),
+                                               dmc.Tab("Domains", value="2", className="tab"), ]),
+                                           html.Div(className="tabs-content h-w-full", children=[
+                                               dcc.Graph(className="h-w-full", figure={}, id="main-plot",
+                                                         responsive=True)])])]),
                           html.Div(className="card-div", children=[
                               create_card("card-1-text", "card-1-subtext")
                           ]),
@@ -66,7 +68,8 @@ def build_dashboard_layout():
                                   placeholder="Select all you like!",
                                   id="client-multi-select",
                                   clearable=True,
-                                  value=[client_list[0]["value"], ] if len(client_list) > 0 else [],
+                                  value=[client_list[0]["value"], ] if client_list is not None and len(
+                                      client_list) > 0 else [],
                                   data=client_list,
                               ),
                           ])
@@ -138,7 +141,8 @@ def init_callbacks(dash_app):
 
     def create_plot(df, tab):
         if tab == "1":
-            df_plot = df.groupby(["client_label", "time_of_day"]).agg(count=pd.NamedAgg(column="client_label", aggfunc="count"))
+            df_plot = df.groupby(["client_label", "time_of_day"]).agg(
+                count=pd.NamedAgg(column="client_label", aggfunc="count"))
             fig = px.histogram(df_plot, x=df_plot.index.get_level_values(1), y="count",
                                color=df_plot.index.get_level_values(0), barmode="group", height=800)
             fig.update_layout(dict(autosize=True))
