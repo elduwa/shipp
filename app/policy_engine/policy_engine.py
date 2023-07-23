@@ -3,6 +3,7 @@ from app.models import Device, DeviceConfig, Policy
 from app.constants import PolicyType, DefaultPolicyValues
 from flask import current_app
 from sqlalchemy.orm import close_all_sessions
+from app.policy_engine.database_sync import sync_policies_to_pihole
 
 
 def evaluate_monitoring_data(dataset: list):
@@ -15,6 +16,9 @@ def evaluate_monitoring_data(dataset: list):
         if device_id is not None and rows is not None and len(rows) > 0:
             bulk_insert_rows[device_id] = rows
     insert_policy_rows(bulk_insert_rows)
+    with current_app.app_context():
+        sync_policies_to_pihole()
+
 
 def evaluate_device_policies(device_ip: str, domains: set) -> (int, list):
     try:
@@ -53,7 +57,6 @@ def insert_policy_rows(bulk_insert_rows: dict):
     for device_id in bulk_insert_rows.keys():
         close_all_sessions()
         rows = bulk_insert_rows[device_id]
-        rows = rows[0:10]
         try:
             device = db.session.execute(db.select(Device).where(Device.id == device_id)).scalars().one()
             new_policies = db.session.scalars(db.insert(Policy).returning(Policy), rows).all()

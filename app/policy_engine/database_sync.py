@@ -1,4 +1,4 @@
-from app.models import Group, Device, DomainList
+from app.models import Group, Device, Domainlist
 from app.extensions import db
 from app.constants import PolicyType
 from flask import current_app
@@ -15,22 +15,24 @@ def sync_device_policies(device):
     try:
         policies = device.policies
         db.session.commit()
-        pi_group = db.session.execute(db.select(Group).where(Group.name == Device.mac_address)).scalars().one()
-        pi_domains = pi_group.domains
-        max_date_modified = max(pi_domains, key=lambda domain: domain.date_modified).date_modified
+        pi_group = db.session.execute(db.select(Group).where(Group.name == device.mac_address)).scalars().one()
+        pi_domains = pi_group.domains.all()
+        max_date_modified = 0
+        if len(pi_domains) > 0:
+            max_date_modified = max(pi_domains, key=lambda domain: domain.date_modified).date_modified
         db.session.commit()
         newer_policies = [policy for policy in policies if policy.date_modified > max_date_modified]
         new_pi_domains = []
         for policy in newer_policies:
             type = None
-            if policy.policy_type == PolicyType.DEFAULT.value:
+            if policy.policy_type == PolicyType.DEFAULT_POLICY.value:
                 continue
             elif policy.policy_type == PolicyType.BLOCK.value:
                 type = 1
             elif policy.policy_type == PolicyType.ALLOW.value:
                 type = 0
             domain = policy.item
-            new_pi_domains.append(DomainList(type=type, domain=domain))
+            new_pi_domains.append(Domainlist(type=type, domain=domain))
         if len(new_pi_domains) > 0:
             pi_group.domains.extend(new_pi_domains)
             db.session.add(pi_group)

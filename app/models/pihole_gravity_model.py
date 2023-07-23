@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 domainlist_by_group = db.Table(
     'domainlist_by_group',
-    db.Column('domainlist_id', db.Integer, db.ForeignKey('domain_list.id'), primary_key=True),
+    db.Column('domainlist_id', db.Integer, db.ForeignKey('domainlist.id'), primary_key=True),
     db.Column('group_id', db.Integer, db.ForeignKey('group.id'), primary_key=True),
     bind_key="pihole"
 )
@@ -24,12 +24,12 @@ class Group(db.Model):
     date_added = db.Column(db.Integer, nullable=False, default=db.func.strftime('%s', 'now'))
     date_modified = db.Column(db.Integer, nullable=False, default=db.func.strftime('%s', 'now'))
     description = db.Column(db.Text)
-    domains = relationship('DomainList', secondary=domainlist_by_group, back_populates="groups", lazy="dynamic")
+    domains = relationship('Domainlist', secondary=domainlist_by_group, back_populates="groups", lazy="dynamic")
     clients = relationship('Client', secondary=client_by_group, back_populates='groups',
                               lazy="dynamic")
 
 
-class DomainList(db.Model):
+class Domainlist(db.Model):
     __bind_key__ = "pihole"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.Integer, nullable=False, default=0)
