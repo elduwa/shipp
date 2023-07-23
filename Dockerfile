@@ -48,7 +48,7 @@ COPY --chown=server_runner:server_runner app app
 COPY --chown=server_runner:server_runner migrations migrations
 COPY --chown=server_runner:server_runner run.py config.py boot.sh requirements.txt ./
 
-RUN apt-get update && apt-get install -y cron
+RUN apt-get update && apt-get install -y cron nano
 
 RUN echo "0 * * * * /opt/webapp/.venv/bin/flask execute-job > /opt/webapp/logs/pihole_job.log 2>&1" >> /etc/cron.d/webapp-cron \
     && echo "0 12 * * 0 /opt/webapp/.venv/bin/flask execute-weekly-notifications > /opt/webapp/logs/weekly_email_job.log 2>&1" >> /etc/cron.d/webapp-cron \

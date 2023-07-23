@@ -131,8 +131,10 @@ def init_callbacks(dash_app):
         total_queries_text = "total queries"
         unique_domains = df["domain"].nunique()
         unique_domains_text = "unique domains"
-        percentage_blocked = df[df["status"].isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()["status"] / \
-                             df.count()["status"]
+        blocked_queries = df[df["status"].isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()["status"]
+        percentage_blocked = 0
+        if blocked_queries > 0:
+            percentage_blocked =  blocked_queries / df.count()["status"]
         percentage_blocked = round(percentage_blocked, 2)
         percentage_blocked = f"{percentage_blocked} %"
         percentage_blocked_text = "requests blocked"
