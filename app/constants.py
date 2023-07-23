@@ -13,3 +13,8 @@ class DefaultPolicyValues(Enum):
 
     ALLOW_ALL = "ALLOW_ALL"
     BLOCK_ALL = "BLOCK_ALL"
+
+
+class DataSource(Enum):
+
+    PI_HOLE = UUID("9ec62265-5475-4311-ba73-cc0d03eb6db0")
