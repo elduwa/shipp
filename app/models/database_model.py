@@ -86,6 +86,17 @@ policy_device_map = db.Table('policy_device_map',
                              db.Column("device_id", db.Integer, db.ForeignKey('device.id'), primary_key=True))
 
 
+class MonitoringReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    data_source = db.Column(db.Uuid, nullable=False, index=True)
+    interval_start = db.Column(db.DateTime, nullable=False)
+    interval_end = db.Column(db.DateTime, nullable=False)
+    total_queries = db.Column(db.Integer, nullable=False)
+    unique_domains = db.Column(db.Integer, nullable=False)
+    queries_blocked = db.Column(db.Integer, nullable=False)
+    evt_create = db.Column(db.DateTime, nullable=False, default=datetime.now())
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)

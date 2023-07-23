@@ -3,12 +3,12 @@ import random
 import pandas as pd
 from flask import current_app
 from app.service_integration_api import PiholeConsumer
-from app.models import DNSQueryMeasurement, InfluxDBClientWrapper
-from app.models import DeviceConfig, Device
+from app.models import DNSQueryMeasurement, InfluxDBClientWrapper, DeviceConfig, Device, MonitoringReport
 from app.extensions import db
 from datetime import datetime
 from requests.exceptions import ConnectionError
 from app.signals import sigs
+from app.constants import DataSource
 
 
 def fetch_query_data_job():
@@ -38,6 +38,7 @@ def fetch_query_data_job():
     with current_app.app_context():
         evaluate_monitoring_signal.send(
             current_app._get_current_object(), dataset=dataset)
+    create_monitoring_report(dataset, from_timestamp, until_timestamp)
     current_app.logger.info('finished job...')
 
 
@@ -90,7 +91,6 @@ def fetch_dns_query_data(from_timestamp: int, until_timestamp: int):
         client = datapoint[3]
         # Filter out data from inactive/unregistered clients
         if client not in active_ip_set:
-
             continue
         timestamp = int(datapoint[0])
         query_type = datapoint[1]
@@ -110,6 +110,23 @@ def convert_to_dataframe(dataset):
     ip_name_map = get_ip_name_mapping()
     df['client_name'] = df['client'].map(lambda x: ip_name_map[x] if x in ip_name_map else x)
     return df
+
+
+def create_monitoring_report(dataset: list, from_timestamp: int, until_timestamp: int):
+    from_datetime = datetime.fromtimestamp(from_timestamp)
+    until_datetime = datetime.fromtimestamp(until_timestamp)
+    df = convert_to_dataframe(dataset)
+    total_queries = df.count()["domain"]
+    total_queries = int(total_queries)
+    unique_domains = df["domain"].nunique()
+    queries_blocked = df[df["status"].isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()["status"]
+    queries_blocked = int(queries_blocked)
+    monitoring_report = MonitoringReport(data_source=DataSource.PI_HOLE.value,
+                                         interval_start=from_datetime, interval_end=until_datetime,
+                                         total_queries=total_queries, unique_domains=unique_domains,
+                                         queries_blocked=queries_blocked)
+    db.session.add(monitoring_report)
+    db.session.commit()
 
 
 def dummy_weekly_summary():
