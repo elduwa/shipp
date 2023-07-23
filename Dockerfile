@@ -33,7 +33,7 @@ RUN npm run build-mail
 
 FROM arm64v8/python:3.11-slim-bullseye
 
-ENV FLASK_APP run.py
+ENV FLASK_APP wsgi.py
 ENV FLASK_ENV production
 
 # Create a non-root user
@@ -46,12 +46,12 @@ USER root
 
 COPY --chown=server_runner:server_runner app app
 COPY --chown=server_runner:server_runner migrations migrations
-COPY --chown=server_runner:server_runner run.py config.py boot.sh requirements.txt ./
+COPY --chown=server_runner:server_runner wsgi.py config.py boot.sh requirements.txt ./
 
 RUN apt-get update && apt-get install -y cron nano
 
-RUN echo "0 * * * * /opt/webapp/.venv/bin/flask execute-job > /opt/webapp/logs/pihole_job.log 2>&1" >> /etc/cron.d/webapp-cron \
-    && echo "0 12 * * 0 /opt/webapp/.venv/bin/flask execute-weekly-notifications > /opt/webapp/logs/weekly_email_job.log 2>&1" >> /etc/cron.d/webapp-cron \
+RUN echo "0 * * * * cd /opt/webapp/ && . project_env.sh && . .venv/bin/activate && flask execute-job > /opt/webapp/logs/pihole_job.log 2>&1" >> /etc/cron.d/webapp-cron \
+    && echo "0 12 * * 0 cd /opt/webapp/ && . project_env.sh && . .venv/bin/activate && flask execute-weekly-notifications > /opt/webapp/logs/weekly_email_job.log 2>&1" >> /etc/cron.d/webapp-cron \
     && crontab -u server_runner /etc/cron.d/webapp-cron \
     && mkdir -p /opt/webapp/logs \
     && touch /opt/webapp/logs/pihole_job.log /opt/webapp/logs/weekly_email_job.log \

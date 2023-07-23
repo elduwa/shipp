@@ -21,5 +21,8 @@ echo "Starting cron..."
 cron
 echo "Cron started"
 
+echo "Creating env export script for cron..."
+printenv | sed 's/^\(.*\)$/export \1/g' > ./project_env.sh
+
 echo "Starting gunicorn..."
-exec gunicorn -b :8000 --access-logfile - --error-logfile - run:app
+exec gunicorn -b :8000 --access-logfile - --error-logfile - wsgi:app
