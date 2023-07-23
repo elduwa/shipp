@@ -1,4 +1,5 @@
 from app.extensions import db, cipher_suite, login_manager
+from app.constants import PolicyType
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -17,6 +18,9 @@ class Device(db.Model):
 
     def get_active_policies(self):
         return self.policies.filter_by(active=True).all()
+
+    def get_default_policy(self):
+        return self.policies.filter_by(policy_type=PolicyType.DEFAULT_POLICY.value).one()
 
     def insert_device(self):
         db.session.add(self)

@@ -14,22 +14,35 @@
         </div>
     {% endif %}
 
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="mb-6">
-            {{ form.name.label(class_="form-label") }} {{ form.name(class_="form-input") }}
+    <div class="flex flex-col items-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div class="form-device">
+            <form class="space-y-4" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="mb-6">
+                    {{ form.name.label(class_="form-label") }} {{ form.name(class_="form-input") }}
+                </div>
+                <div class="mb-6">
+                    {{ form.mac.label(class_="form-label") }} {{ form.mac(class_="form-input") }}
+                </div>
+                <div class="mb-6">
+                    {{ form.ip.label(class_="form-label") }} {{ form.ip(class_="form-input") }}
+                </div>
+                <div class="mb-6">
+                    {{ form.default_policy.label(class_="form-label") }}
+                            {% for subfield in form.default_policy %}
+                                <div class="flex items-center mb-4">
+                                    {{ subfield(class_="form-radio-input") }}
+                                    {{ subfield.label(class_="form-radio-label") }}
+                                </div>
+                            {% endfor %}
+                </div>
+                <button type="submit"
+                        class="form-btn" id="add-btn">
+                    Save changes
+                </button>
+            </form>
         </div>
-        <div class="mb-6">
-            {{ form.mac.label(class_="form-label") }} {{ form.mac(class_="form-input") }}
-        </div>
-        <div class="mb-6">
-            {{ form.ip.label(class_="form-label") }} {{ form.ip(class_="form-input") }}
-        </div>
-        <button type="submit"
-                class="form-btn" id="add-btn">
-            Save changes
-        </button>
-    </form>
+    </div>
 
 {% endblock %}
 

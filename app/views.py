@@ -37,7 +37,7 @@ def add_device():
         device = Device(mac_address=form.mac.data, device_name=form.name.data)
         device.device_configs.append(DeviceConfig(ip_address=form.ip.data))
         default_policy = Policy(policy_type=PolicyType.DEFAULT_POLICY.value,
-                                item=DefaultPolicyValues.ALLOW_ALL.value)
+                                item=form.default_policy.data)
         device.policies.append(default_policy)
         device.insert_device()
         try:
@@ -54,9 +54,12 @@ def add_device():
 def edit_device(device_id):
     device = db.get_or_404(Device, device_id)
     current_config = device.get_current_config()
+    default_policy = device.get_default_policy()
     form = DeviceForm()
     if form.validate_on_submit():
         device.device_name = form.name.data
+        if default_policy.item != form.default_policy.data:
+            default_policy.item = form.default_policy.data
         if current_config.ip_address != form.ip.data:
             current_config.valid_to = datetime.now()
             current_config.update_device_config()
@@ -70,8 +73,9 @@ def edit_device(device_id):
             return redirect(url_for("main.devices"))
     form.name.data = device.device_name
     form.mac.data = device.mac_address
-    #disable_input_field(form.mac)
+    # disable_input_field(form.mac)
     form.ip.data = current_config.ip_address
+    form.default_policy.data = default_policy.item
     return render_template("edit-device.html", form=form)
 
 

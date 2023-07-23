@@ -1,14 +1,18 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, RadioField
 from wtforms.validators import DataRequired, IPAddress, MacAddress, Email, Length, Regexp, EqualTo, ValidationError
 from app.models import User
 from app.extensions import db
+from app.constants import DefaultPolicyValues
 
 
 class DeviceForm(FlaskForm):
     name = StringField('Device Name', validators=[DataRequired()])
     mac = StringField('MAC Address', validators=[DataRequired(), MacAddress()])
     ip = StringField('IP Address', validators=[DataRequired(), IPAddress()])
+    default_policy = RadioField('Default Policy', choices=[(DefaultPolicyValues.ALLOW_ALL.value, 'Allow all'), (DefaultPolicyValues.BLOCK_ALL.value, 'Block all')],
+                                default=DefaultPolicyValues.ALLOW_ALL.value, validators=[DataRequired()])
+
 
 
 class LoginForm(FlaskForm):
