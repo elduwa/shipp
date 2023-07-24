@@ -12,10 +12,9 @@ def evaluate_monitoring_data(dataset: list):
     device_ips = device_to_domains.keys()
     bulk_insert_rows = dict()
     for device_ip in device_ips:
-        device_id, rows = evaluate_device_policies(device_ip, device_to_domains[device_ip])
-        if device_id is not None and rows is not None and len(rows) > 0:
-            bulk_insert_rows[device_id] = rows
-    insert_policy_rows(bulk_insert_rows)
+        device, new_policies = evaluate_device_policies(device_ip, device_to_domains[device_ip])
+        if device is not None and new_policies is not None and len(new_policies) > 0:
+            insert_policy_rows(device, new_policies)
     with current_app.app_context():
         sync_policies_to_pihole()
 
@@ -38,35 +37,29 @@ def evaluate_device_policies(device_ip: str, domains: set) -> (int, list):
         if default_policy is None:
             raise Exception(f"Default policy for device {device_ip} not found")
         else:
-            insert_rows = []
+            insert_policies = []
             for domain in new_domains:
-                row = dict()
+                policy_type = None
                 if default_policy == DefaultPolicyValues.ALLOW_ALL.value:
-                    row["policy_type"] = PolicyType.ALLOW.value
+                    policy_type = PolicyType.ALLOW.value
                 elif default_policy == DefaultPolicyValues.BLOCK_ALL.value:
-                    row["policy_type"] = PolicyType.BLOCK.value
-                row["item"] = domain
-                insert_rows.append(row)
-            return device.id, insert_rows
+                    policy_type = PolicyType.BLOCK.value
+                item = domain
+                insert_policies.append(Policy(policy_type=policy_type, item=item))
+            return device, insert_policies
     except Exception as e:
         current_app.logger.error(f"Error while evaluating device policies: {e}")
         return None, None
 
 
-def insert_policy_rows(bulk_insert_rows: dict):
-    for device_id in bulk_insert_rows.keys():
-        close_all_sessions()
-        rows = bulk_insert_rows[device_id]
-        try:
-            device = db.session.execute(db.select(Device).where(Device.id == device_id)).scalars().one()
-            new_policies = db.session.scalars(db.insert(Policy).returning(Policy), rows).all()
-            #db.session.flush()
-            device.policies.extend(new_policies)
-            db.session.add(device)
-            db.session.commit()
-        except Exception as e:
-            current_app.logger.error(f"Error while inserting policy rows: {e}")
-            db.session.rollback()
+def insert_policy_rows(device, new_policies):
+    try:
+        device.policies.extend(new_policies)
+        db.session.add(device)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(f"Error while inserting policy rows: {e}")
+        db.session.rollback()
 
 
 def transform_dataset(dataset: list):
