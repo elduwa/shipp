@@ -38,6 +38,11 @@ def create_app(config_name: str):
         app.register_blueprint(views.bp)
 
         from app.dashapp.dashboard import init_dashboard
-        app = init_dashboard(app)
+        try:
+            app.logger.info("Initializing dashboard")
+            app = init_dashboard(app)
+            app.logger.info("Dashboard initialized")
+        except Exception as e:
+            app.logger.error(f"Could not initialize dashboard: {e}")
 
         return app

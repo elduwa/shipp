@@ -19,7 +19,7 @@ services:
       - INFLUXDB_BUCKET=communications
       - PIHOLE_DOMAIN=<your_pihole_domain>
       - PIHOLE_AUTH_TOKEN=<your_pihole_auth_token>
-      - PIHOLE_DB_URL=sqlite:////opt/webapp/data/pihole_etc/pihole-FTL.db
+      - PIHOLE_DB_URL=sqlite:////opt/webapp/data/pihole_etc/gravity.db
       - MAIL_SERVER=<your_mail_server>
       - MAIL_PORT=<your_mail_port>
       - MAIL_USERNAME=<your_mail_username>

@@ -50,8 +50,8 @@ COPY --chown=server_runner:server_runner wsgi.py config.py boot.sh requirements.
 
 RUN apt-get update && apt-get install -y cron nano
 
-RUN echo "0 * * * * cd /opt/webapp/ && . project_env.sh && . .venv/bin/activate && flask execute-job > /opt/webapp/logs/pihole_job.log 2>&1" >> /etc/cron.d/webapp-cron \
-    && echo "0 12 * * 0 cd /opt/webapp/ && . project_env.sh && . .venv/bin/activate && flask execute-weekly-notifications > /opt/webapp/logs/weekly_email_job.log 2>&1" >> /etc/cron.d/webapp-cron \
+RUN echo "0 * * * * cd /opt/webapp/ && . .venv/bin/activate && . ./project_env.sh && flask execute-job > /opt/webapp/logs/pihole_job.log 2>&1" >> /etc/cron.d/webapp-cron \
+    && echo "0 12 * * 0 cd /opt/webapp/ && . .venv/bin/activate && . ./project_env.sh && flask execute-weekly-notifications > /opt/webapp/logs/weekly_email_job.log 2>&1" >> /etc/cron.d/webapp-cron \
     && crontab -u server_runner /etc/cron.d/webapp-cron \
     && mkdir -p /opt/webapp/logs \
     && touch /opt/webapp/logs/pihole_job.log /opt/webapp/logs/weekly_email_job.log \

@@ -26,6 +26,7 @@ def execute_job():
     """Run scheduled job"""
     with app.app_context():
         from app.monitors.pihole_monitor import fetch_query_data_job
+        app.logger.info("Starting monitoring job")
         fetch_query_data_job()
 
 

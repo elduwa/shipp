@@ -15,7 +15,7 @@ def fetch_query_data_job():
     current_app.logger.info('starting job...')
 
     influx_active = current_app.config["INFLUXDB_ACTIVE"]
-    from_timestamp = datetime.now().timestamp() - current_app.config['SCHEDULER_TIMEINTERVAL']
+    from_timestamp = int(datetime.now().timestamp()) - int(current_app.config['SCHEDULER_TIMEINTERVAL'])
     until_timestamp = int(datetime.now().timestamp())
     if influx_active:
         # Load latest record from influxdb and find timestamp
