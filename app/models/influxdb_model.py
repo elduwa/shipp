@@ -112,11 +112,16 @@ class InfluxDBClientWrapper:
             yield point
 
     def get_latest_timestamp(self, measurement: str) -> int:
-        query = f'from(bucket: "{self.influx_bucket}") |> range(start: -1) |> last()'
-        query_api = self._client.query_api()
-        result = query_api.query(query)
-        if len(result) > 0:
-            latest_timestamp = result[0].records[0].get_time()
-            return int(latest_timestamp.timestamp())
-        else:
+        try:
+            query = f'from(bucket: "{self.influx_bucket}") |> range(start: -1) |> last()'
+            query_api = self._client.query_api()
+            result = query_api.query(query)
+            if len(result) > 0:
+                latest_timestamp = result[0].records[0].get_time()
+                return int(latest_timestamp.timestamp())
+            else:
+                return -1
+        except Exception as e:
+            current_app.logger.error(
+                f"Error while querying latest timestamp: {e}")
             return -1
