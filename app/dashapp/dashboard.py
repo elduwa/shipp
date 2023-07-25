@@ -43,38 +43,44 @@ def init_dashboard(server):
 def build_dashboard_layout():
     client_list = get_all_clients()
     layout = html.Div(className="h-w-full",
-                      children=[html.Div(className="dash-container", children=[
-                          html.Div(className="graph-div", children=[
-                              dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills",
-                                       color="orange",
-                                       children=[
-                                           dmc.TabsList(className="tabs-list", children=[
-                                               dmc.Tab("Total queries", value="1", className="tab"),
-                                               dmc.Tab("Domains", value="2", className="tab"), ]),
-                                           html.Div(className="tabs-content h-w-full", children=[
-                                               dcc.Graph(className="h-w-full", figure={}, id="main-plot",
-                                                         responsive=True)])])]),
-                          html.Div(className="card-div", children=[
-                              create_card("card-1-text", "card-1-subtext")
+                      children=[
+                          html.H5(className="dash-h5", children=[
+                              html.Span("Dashboard", className="dash-title"),
+                              html.Small("last 24h", className="dash-subtitle")
                           ]),
-                          html.Div(className="card-div", children=[
-                              create_card("card-2-text", "card-2-subtext")
-                          ]),
-                          html.Div(className="card-div", children=[
-                              create_card("card-3-text", "card-3-subtext")
-                          ]),
-                          html.Div(className="multiselect-div", children=[
-                              dmc.MultiSelect(
-                                  label="Select clients",
-                                  placeholder="Select all you like!",
-                                  id="client-multi-select",
-                                  clearable=True,
-                                  value=[client["value"] for client in client_list] if client_list is not None and len(
-                                      client_list) > 0 else [],
-                                  data=client_list,
-                              ),
-                          ])
-                      ])]
+                          html.Div(className="dash-container", children=[
+                              html.Div(className="graph-div", children=[
+                                  dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills",
+                                           color="orange",
+                                           children=[
+                                               dmc.TabsList(className="tabs-list", children=[
+                                                   dmc.Tab("Total queries", value="1", className="tab"),
+                                                   dmc.Tab("Domains", value="2", className="tab"), ]),
+                                               html.Div(className="tabs-content h-w-full", children=[
+                                                   dcc.Graph(className="h-w-full", figure={}, id="main-plot",
+                                                             responsive=True, config={'displaylogo': False})])])]),
+                              html.Div(className="card-div", children=[
+                                  create_card("card-1-text", "card-1-subtext")
+                              ]),
+                              html.Div(className="card-div", children=[
+                                  create_card("card-2-text", "card-2-subtext")
+                              ]),
+                              html.Div(className="card-div", children=[
+                                  create_card("card-3-text", "card-3-subtext")
+                              ]),
+                              html.Div(className="multiselect-div", children=[
+                                  dmc.MultiSelect(
+                                      label="Select clients",
+                                      placeholder="Select all you like!",
+                                      id="client-multi-select",
+                                      clearable=True,
+                                      value=[client["value"] for client in
+                                             client_list] if client_list is not None and len(
+                                          client_list) > 0 else [],
+                                      data=client_list,
+                                  ),
+                              ])
+                          ])]
                       )
     return layout
 
@@ -136,7 +142,7 @@ def init_callbacks(dash_app):
         blocked_queries = df[df["status"].isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()["status"]
         percentage_blocked = 0
         if blocked_queries > 0:
-            percentage_blocked =  blocked_queries / df.count()["status"]
+            percentage_blocked = blocked_queries / df.count()["status"]
         percentage_blocked = round(percentage_blocked, 2)
         percentage_blocked = f"{percentage_blocked} %"
         percentage_blocked_text = "requests blocked"
@@ -148,7 +154,8 @@ def init_callbacks(dash_app):
             df_plot = df.groupby(["client_label", "time_of_day"]).agg(
                 count=pd.NamedAgg(column="client_label", aggfunc="count"))
             fig = px.histogram(df_plot, x=df_plot.index.get_level_values(1), y="count",
-                               color=df_plot.index.get_level_values(0), barmode="group", height=800)
+                               color=df_plot.index.get_level_values(0), barmode="group", height=800,
+                               labels={"x": "Time of day", "y": "Number of queries"})
             fig.update_layout(dict(autosize=True))
             return fig
         elif tab == "2":

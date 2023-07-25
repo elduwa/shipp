@@ -20,7 +20,7 @@ def fetch_query_data_job():
     if influx_active:
         # Load latest record from influxdb and find timestamp
         influxdb_client = InfluxDBClientWrapper()
-        latest_timestamp = influxdb_client.get_latest_timestamp("dns_queries")
+        latest_timestamp = influxdb_client.get_latest_timestamp("dns_queries") + 1
         from_timestamp = from_timestamp if latest_timestamp == -1 else latest_timestamp
 
 

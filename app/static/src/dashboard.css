@@ -38,3 +38,15 @@
     @apply bg-white hover:bg-accent-4-orange-5 hover:text-white border-solid border-2 border-accent-4-orange-5;
 }
 
+.dash-title {
+    @apply text-xl font-bold text-accent-4-orange-5;
+}
+
+.dash-subtitle {
+    @apply text-lg font-semibold text-accent-3-orange-2 ml-2;
+}
+
+.dash-h5 {
+    @apply mb-4;
+}
+
