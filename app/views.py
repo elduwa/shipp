@@ -1,8 +1,10 @@
 # App routing
+import requests
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app, abort
 from app.extensions import db
 from app.models import Device, DeviceConfig, User, Policy
 from app.forms import DeviceForm, LoginForm, RegistrationForm
+from app.dashapp.dashboard import init_dashboard
 from datetime import datetime
 from flask_login import login_required, login_user, logout_user
 from app.constants import PolicyType, DefaultPolicyValues
@@ -16,6 +18,9 @@ def index():
     forwarded_proto = request.headers.get("X-Forwarded-Proto", request.scheme)
     forwarded_host = request.headers.get("X-Forwarded-Host", request.host)
     base_url = f"{forwarded_proto}://{forwarded_host}"
+    redirect_url = base_url + "/dash/"
+
+    current_app.logger.info(f"Redirecting to {redirect_url}")
     return redirect(base_url + "/dash/")
 
 

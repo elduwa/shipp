@@ -32,6 +32,7 @@ def init_dashboard(server):
 
         dash_app.index_string = html_body
 
+        current_app.logger.info("Building dashboard layout")
         dash_app.layout = build_dashboard_layout()
 
         init_callbacks(dash_app)
