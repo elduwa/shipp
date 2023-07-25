@@ -69,7 +69,7 @@ def build_dashboard_layout():
                                   placeholder="Select all you like!",
                                   id="client-multi-select",
                                   clearable=True,
-                                  value=[client_list[0]["value"], ] if client_list is not None and len(
+                                  value=[client["value"] for client in client_list] if client_list is not None and len(
                                       client_list) > 0 else [],
                                   data=client_list,
                               ),
@@ -109,12 +109,13 @@ def init_callbacks(dash_app):
         Output(component_id="card-2-subtext", component_property="children"),
         Output(component_id="card-3-text", component_property="children"),
         Output(component_id="card-3-subtext", component_property="children"),
+        Output(component_id="client-multi-select", component_property="data"),
         Input(component_id="client-multi-select", component_property="value"),
-        Input(component_id="client-multi-select", component_property="data"),
         Input(component_id="graph-tabs", component_property="value"))
-    def update_graph(client_ips, ip_label_list, tab):
+    def update_graph(client_ips, tab):
         df = last_24h_summary()
         ip_set = set(client_ips)
+        ip_label_list = get_all_clients()
         ip_to_label = dict()
         for ip_label in ip_label_list:
             if ip_label["label"] in ip_to_label.values():
@@ -140,7 +141,7 @@ def init_callbacks(dash_app):
         percentage_blocked = f"{percentage_blocked} %"
         percentage_blocked_text = "requests blocked"
 
-        return fig, total_queries, total_queries_text, unique_domains, unique_domains_text, percentage_blocked, percentage_blocked_text
+        return fig, total_queries, total_queries_text, unique_domains, unique_domains_text, percentage_blocked, percentage_blocked_text, ip_label_list
 
     def create_plot(df, tab):
         if tab == "1":

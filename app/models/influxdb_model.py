@@ -43,8 +43,10 @@ class InfluxDBClientWrapper:
         INFLUXDB_URL = current_app.config['INFLUXDB_URL']
         INFLUXDB_AUTH_TOKEN = current_app.config['INFLUXDB_AUTH_TOKEN']
         INFLUXDB_ORG = current_app.config['INFLUXDB_ORG']
+        current_app.logger.info(f"InfluxDB configuration: INFLUXDB_URL: {INFLUXDB_URL}, " +
+                                f"INFLUXDB_AUTH_TOKEN: {INFLUXDB_AUTH_TOKEN}, INFLUXDB_ORG: {INFLUXDB_ORG}")
         retries = WritesRetry(total=3, retry_interval=1, exponential_base=2)
-        return InfluxDBClient(url=INFLUXDB_URL, org=INFLUXDB_ORG, retries=retries, headers={"Authorization": INFLUXDB_AUTH_TOKEN})
+        return InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_AUTH_TOKEN, org=INFLUXDB_ORG, retries=retries)
 
     def write_measurement(self, measurement: str, point):
         try:
