@@ -1,13 +1,20 @@
 import plotly.graph_objects as go
 import plotly.express as px
+from app.extensions import db
+from flask import current_app
+from app.models import Device
 
 
 def create_stacked_bar_chart(df):
     # Create time of day column with 1-hour buckets
     df['time_of_day'] = df['timestamp'].dt.floor('1H').dt.time
 
+    ip_to_name = get_ip_to_name()
+    df['client_name'] = df['client'].map(ip_to_name)
+
     # Group DNS requests by time of day and client, and calculate the total queries per client
-    requests_by_time_of_day_client = df.groupby(['time_of_day', 'client']).size().unstack(fill_value=0)
+    requests_by_time_of_day_client = df.groupby(['time_of_day', 'client_name']).size().unstack(fill_value=0) / 7
+    requests_by_time_of_day_client = requests_by_time_of_day_client.round()
 
     # Create the stacked bar chart
     fig = go.Figure()
@@ -21,9 +28,9 @@ def create_stacked_bar_chart(df):
 
     # Define layout and axis labels
     fig.update_layout(
-        title='Total Queries per Client Grouped by Time of Day',
+        title='Average distribution of DNS requests by hour',
         xaxis_title='Time of Day',
-        yaxis_title='Count',
+        yaxis_title='Requests',
         barmode='stack'
     )
     return fig
@@ -50,3 +57,25 @@ def create_pie_chart(df):
 def figure_to_byte_img(figure):
     img_bytes = figure.to_image(format="png", engine="kaleido")
     return img_bytes
+
+
+def get_ip_to_name():
+    try:
+        ip_to_name = dict()
+        devices = db.session.execute(db.select(Device)).scalars().all()
+        for device in devices:
+            name = device.device_name
+            ip = device.get_current_config().ip_address
+            if name is not None and name != "":
+                label = name
+            else:
+                label = ip
+            if label in ip_to_name.values():
+                ip_to_name[ip] = label + " (" + ip + ")"
+            else:
+                ip_to_name[ip] = label
+
+        db.session.commit()
+        return ip_to_name
+    except Exception as e:
+        current_app.logger.error(f"Could not load devices: {e}")
