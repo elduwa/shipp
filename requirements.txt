@@ -17,6 +17,7 @@ reactivex~=4.0.4
 Werkzeug~=2.3.3
 alembic~=1.11.1
 SQLAlchemy~=2.0.15
+sqlalchemy-utils
 pandas~=2.0.3
 plotly~=5.15.0
 kaleido
