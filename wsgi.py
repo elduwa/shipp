@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from logging.config import dictConfig
 import os
 
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -9,6 +10,22 @@ from app import create_app
 from flask_migrate import upgrade
 from app.extensions import db
 
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
+
 current_config: str = None
 
 if os.getenv('FLASK_ENV') == 'production':
@@ -17,8 +34,6 @@ else:
     current_config = "development"
 
 app = create_app(current_config)
-
-
 
 
 @app.cli.command()
