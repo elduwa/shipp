@@ -25,6 +25,8 @@ services:
       - MAIL_USERNAME=<your_mail_username>
       - MAIL_PASSWORD=<your_mail_password>
       - SCHEDULER_TIMEINTERVAL=3600
+      - TZ=<your_timezone>
+    restart: unless-stopped
 
   nginx:
     container_name: nginx_reverse_proxy
@@ -39,6 +41,7 @@ services:
       - static_volume:/usr/src/app/static
     environment:
       - LOCAL_NETWORK_IP_RANGE=${REV_SERVER_CIDR}
+    restart: unless-stopped
 
   influxdb:
     container_name: influxdb
@@ -55,6 +58,7 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=communications
       - DOCKER_INFLUXDB_INIT_RETENTION=1y
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=<your_influxdb_auth_token>
+    restart: unless-stopped
 
   pihole:
     container_name: pihole

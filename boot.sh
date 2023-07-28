@@ -47,4 +47,4 @@ echo "Creating env export script for cron..."
 chmod +x ./project_env.sh
 
 echo "Starting gunicorn..."
-exec gunicorn -b :8000 -w 2 --max-requests 100 --timeout 120 --access-logfile - --error-logfile - wsgi:app
+exec gunicorn -b :8000 --max-requests 100 --timeout 120 --access-logfile - --error-logfile - wsgi:app
