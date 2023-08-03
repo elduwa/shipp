@@ -84,6 +84,14 @@ def edit_device(device_id):
     return render_template("edit-device.html", form=form)
 
 
+@bp.route("/delete-device/<int:device_id>", methods=["DELETE"])
+@login_required
+def delete_device(device_id):
+    device = db.get_or_404(Device, device_id)
+    device.delete_device()
+    return redirect(url_for("main.devices"))
+
+
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
