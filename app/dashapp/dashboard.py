@@ -1,12 +1,14 @@
 import os
 import pandas as pd
 import plotly.express as px
+import pytz
 import dash_mantine_components as dmc
 from dash import Dash, html, dcc, Output, Input
 from flask import render_template_string, current_app
 from app.extensions import db
 from app.models import Device
 from app.monitors.pihole_monitor import last_24h_summary
+from datetime import datetime, timedelta
 
 
 def init_dashboard(server):
@@ -130,8 +132,15 @@ def init_callbacks(dash_app):
                 ip_to_label[ip_label["value"]] = ip_label["label"]
 
         df = df[df["client"].isin(ip_set)]
-        df['time_of_day'] = df['timestamp'].dt.floor('1H').dt.time
+        df['time_of_day'] = df['timestamp'].dt.floor('H').dt.time
         df["client_label"] = df["client"].map(ip_to_label)
+
+        timezone = current_app.config['TZ']
+        if timezone:
+            current_time = datetime.now(pytz.timezone(timezone))
+            current_hour = current_time.replace(minute=0, second=0, microsecond=0)
+            start_time = current_hour - timedelta(hours=23)
+            df = df[df['timestamp'] > start_time]
 
         fig = create_plot(df, tab)
 
@@ -139,10 +148,11 @@ def init_callbacks(dash_app):
         total_queries_text = "total queries"
         unique_domains = df["domain"].nunique()
         unique_domains_text = "unique domains"
-        blocked_queries = df[df["status"].isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()["status"]
+        status = pd.to_numeric(df["status"], errors="coerce").dropna()
+        num_blocked = status[status.isin([1, 4, 5, 6, 7, 8, 9, 10, 11, 15, 16])].count()
         percentage_blocked = 0
-        if blocked_queries > 0:
-            percentage_blocked = blocked_queries / df.count()["status"]
+        if num_blocked > 0:
+            percentage_blocked = num_blocked / status.count() * 100
         percentage_blocked = round(percentage_blocked, 2)
         percentage_blocked = f"{percentage_blocked} %"
         percentage_blocked_text = "requests blocked"
@@ -151,11 +161,13 @@ def init_callbacks(dash_app):
 
     def create_plot(df, tab):
         if tab == "1":
-            df_plot = df.groupby(["client_label", "time_of_day"]).agg(
+            df_plot = df.set_index("timestamp")
+            df_plot = df_plot.sort_index()
+            df_plot = df_plot.groupby(["client_label", "time_of_day"], sort=False).agg(
                 count=pd.NamedAgg(column="client_label", aggfunc="count"))
             fig = px.histogram(df_plot, x=df_plot.index.get_level_values(1), y="count",
                                color=df_plot.index.get_level_values(0), barmode="group", height=800,
-                               labels={"x": "Time of day", "y": "Number of queries"})
+                               labels={"x": "Time of day", "count": "queries"})
             fig.update_layout(dict(autosize=True))
             return fig
         elif tab == "2":

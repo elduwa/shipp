@@ -111,7 +111,13 @@ def convert_to_dataframe(dataset):
     # Create pandas dataframe
     column_names = ['timestamp_sec', 'client', 'query_type', 'domain', 'status', 'reply_type']
     df = pd.DataFrame(dataset, columns=column_names)
-    df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s').dt.tz_localize('Europe/Zurich')
+    df['timestamp'] = pd.to_datetime(df['timestamp_sec'], unit='s', utc=True)
+    timezone = current_app.config['TZ']
+    if timezone:
+        try:
+            df['timestamp'] = df.timestamp.dt.tz_convert(timezone)
+        except Exception as e:
+            current_app.logger.error(f"Cannot localize timezone: {e}")
     ip_name_map = get_ip_name_mapping()
     df['client_name'] = df['client'].map(lambda x: ip_name_map[x] if x in ip_name_map else x)
     return df

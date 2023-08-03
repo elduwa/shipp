@@ -24,6 +24,7 @@ class Config:
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     SCHEDULER_TIMEINTERVAL = os.getenv('SCHEDULER_TIMEINTERVAL')
+    TZ = os.getenv('TZ')
 
     @staticmethod
     def init_app(app):
