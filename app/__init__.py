@@ -29,7 +29,7 @@ def create_app(config_name: str):
 
         migrate.init_app(app, db)
 
-        if not database_exists(db.engine.url):
+        if not database_exists(db.engine.url) and not config_name == "test":
             db.create_all()
             stamp()
             app.logger.info("Database created")
