@@ -8,18 +8,14 @@ WORKDIR /builder
 
 USER root
 
-# Install Node.js and npm
 RUN apt-get update && apt-get install -y curl
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 
-# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install Node.js dependencies
 RUN npm install
 
-# Copy the rest of the source code
 COPY . .
 
 # Build the frontend dependencies
@@ -36,12 +32,10 @@ FROM arm64v8/python:3.11-slim-bullseye
 ENV FLASK_APP wsgi.py
 ENV FLASK_ENV production
 
-# Create a non-root user
 RUN adduser --disabled-password --gecos "" server_runner
 
 WORKDIR /opt/webapp
 
-# Switch to root user and install cron
 USER root
 
 COPY --chown=server_runner:server_runner app app
@@ -58,11 +52,9 @@ RUN echo "0 * * * * cd /opt/webapp/ && . .venv/bin/activate && . ./project_env.s
     && chown server_runner:server_runner /opt/webapp/logs/pihole_job.log /opt/webapp/logs/weekly_email_job.log \
     && chmod u+s /usr/sbin/cron
 
-# Grant permissions to server_runner user for the /opt/webapp/ directory
 RUN chown -R server_runner:server_runner /opt/webapp
 RUN chmod u+x /opt/webapp/boot.sh
 
-# Switch back to non-root user
 USER server_runner
 
 RUN mkdir -p /opt/webapp/data/rel_db
@@ -74,11 +66,6 @@ COPY --from=builder --chown=server_runner:server_runner /builder/app/static/dist
 RUN python -m venv .venv
 RUN .venv/bin/pip install -r requirements.txt
 
-# run-time configuration
 EXPOSE 8000
 
 ENTRYPOINT ["./boot.sh"]
-
-# CMD [".venv/bin/gunicorn", "--bind", "0.0.0.0:8000", "run:app"]
-# If wanting to write to stdout instead of default logfile (configure logfile in application)
-#CMD ["gunicorn", "-b", ":5000", "--access-logfile", "-", "--error-logfile", "-", "flasky:app"]
