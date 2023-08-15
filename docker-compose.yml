@@ -1,7 +1,7 @@
 services:
-  ba-webapp:
-    container_name: ba-webapp
-    image: your-docker-hub-username/your-repo-name:your-image-tag
+  shipp:
+    container_name: shipp
+    image: elliottwallace/shipp:latest
     expose:
       - 8000
     volumes:
@@ -32,7 +32,7 @@ services:
     container_name: nginx_reverse_proxy
     image: nginx:stable-bullseye
     depends_on:
-      - ba-webapp
+      - shipp
     ports:
       - "8080:80"
     volumes:

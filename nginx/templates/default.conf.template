@@ -1,7 +1,7 @@
 # Renamed and moved to /etc/nginx/nginx.conf
 
 upstream backend {
-    server ba-backend:8000;
+    server shipp:8000;
 }
 
 server {
@@ -9,18 +9,18 @@ server {
     charset utf-8;
 
     location / {
-        deny all;
         allow ${LOCAL_NETWORK_IP_RANGE};
+        deny all;
         proxy_pass http://backend;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Host $http_host;
         proxy_set_header X-Forwarded-Prefix /;
     }
 
     location /static {
-        deny all;
         allow ${LOCAL_NETWORK_IP_RANGE};
+        deny all;
         alias /usr/src/app/static;
     }
 }

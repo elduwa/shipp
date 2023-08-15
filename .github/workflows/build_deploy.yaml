@@ -27,5 +27,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ba-webapp:${{ github.event.release.tag_name }}, ${{ secrets.DOCKERHUB_USERNAME }}/ba-webapp:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/shipp:${{ github.event.release.tag_name }}, ${{ secrets.DOCKERHUB_USERNAME }}/shipp:latest
           platforms: linux/arm64
