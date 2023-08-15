@@ -18,3 +18,8 @@ class DefaultPolicyValues(Enum):
 class DataSource(Enum):
 
     PI_HOLE = UUID("9ec62265-5475-4311-ba73-cc0d03eb6db0")
+
+
+class ExternalSystemType(Enum):
+
+    PI_HOLE_API = UUID("cb656898-15dc-441d-b860-de3d054a0647")

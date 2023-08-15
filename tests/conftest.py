@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture
 def app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-    dotenv_path = os.path.join(base_dir, ".env")
+    dotenv_path = os.path.join(base_dir, "test.env")
     load_dotenv(dotenv_path)
 
     from app import create_app
