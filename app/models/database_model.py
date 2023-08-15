@@ -147,11 +147,12 @@ class UserApiKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     ext_system = db.Column(db.Uuid, nullable=False)
+    domain = db.Column(db.String(64), nullable=False)
     encrypted_api_key = db.Column(db.String(128), nullable=False)
 
     @property
     def api_key(self):
-        decrypted_api_key = cipher_suite.decrypt(self.encrypted_api_key.encode())
+        decrypted_api_key = cipher_suite.decrypt(self.encrypted_api_key)
         return decrypted_api_key.decode()
 
     @api_key.setter

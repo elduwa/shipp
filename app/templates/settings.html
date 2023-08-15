@@ -17,25 +17,13 @@
             <form class="space-y-4" method="POST">
                 {{ form.hidden_tag() }}
                 <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                    Edit device
+                    Settings
                 </h1>
                 <div class="mb-6">
-                    {{ form.name.label(class_="form-label") }} {{ form.name(class_="form-input") }}
+                    {{ form.pihole_domain.label(class_="form-label") }} {{ form.pihole_domain(class_="form-input") }}
                 </div>
                 <div class="mb-6">
-                    {{ form.mac.label(class_="form-label") }} {{ form.mac(class_="form-input") }}
-                </div>
-                <div class="mb-6">
-                    {{ form.ip.label(class_="form-label") }} {{ form.ip(class_="form-input") }}
-                </div>
-                <div class="mb-6">
-                    {{ form.default_policy.label(class_="form-label") }}
-                            {% for subfield in form.default_policy %}
-                                <div class="flex items-center mb-4">
-                                    {{ subfield(class_="form-radio-input") }}
-                                    {{ subfield.label(class_="form-radio-label") }}
-                                </div>
-                            {% endfor %}
+                    {{ form.pihole_api_token.label(class_="form-label") }} {{ form.pihole_api_token(class_="form-input") }}
                 </div>
                 <button type="submit"
                         class="form-btn" id="add-btn">

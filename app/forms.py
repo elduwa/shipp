@@ -38,3 +38,8 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, field):
         if db.session.execute(db.select(User).where(User.username == field.data)).scalars().first():
             raise ValidationError('Username already in use.')
+
+
+class UserSettingsForm(FlaskForm):
+    pihole_domain = StringField('Pi-hole Domain', validators=[DataRequired()], default='pi.hole')
+    pihole_api_token = StringField('Pi-hole API Token', validators=[DataRequired()])

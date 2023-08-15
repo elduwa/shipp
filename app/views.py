@@ -1,11 +1,11 @@
 # App routing
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app, abort
 from app.extensions import db
-from app.models import Device, DeviceConfig, User, Policy
-from app.forms import DeviceForm, LoginForm, RegistrationForm
+from app.models import Device, DeviceConfig, User, Policy, UserApiKey
+from app.forms import DeviceForm, LoginForm, RegistrationForm, UserSettingsForm
 from datetime import datetime
-from flask_login import login_required, login_user, logout_user
-from app.constants import PolicyType
+from flask_login import login_required, login_user, logout_user, current_user
+from app.constants import PolicyType, ExternalSystemType
 from app.service_integration_api import init_pihole_device, update_pihole_device
 
 bp = Blueprint("main", __name__, template_folder="templates")
@@ -89,6 +89,28 @@ def delete_device(device_id):
     device.delete_device()
     return redirect(url_for("main.devices"))
 
+@bp.route("/settings", methods=["GET", "POST"])
+@login_required
+def settings():
+    pihole_api_settings = current_user.api_keys.filter_by(ext_system = ExternalSystemType.PI_HOLE_API.value).one_or_none()
+    is_insert = pihole_api_settings is None
+    form = UserSettingsForm()
+    if form.validate_on_submit():
+        if is_insert:
+            pihole_api_settings = UserApiKey()
+            pihole_api_settings.user_id = int(current_user.get_id())
+            pihole_api_settings.ext_system = ExternalSystemType.PI_HOLE_API.value
+            pihole_api_settings.domain = form.pihole_domain.data
+            pihole_api_settings.api_key = form.pihole_api_token.data
+        else:
+            pihole_api_settings.domain = form.pihole_domain.data
+            pihole_api_settings.api_key = form.pihole_api_token.data
+        pihole_api_settings.insert_api_key()
+        return redirect(url_for("main.index"))
+    if not is_insert:
+        form.pihole_domain.data = pihole_api_settings.domain
+        form.pihole_api_token.data = pihole_api_settings.api_key
+    return render_template("settings.html", form=form)
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
