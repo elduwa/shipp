@@ -8,14 +8,13 @@ module.exports = {
   theme: {
     extend: {
         colors: {
-            "base-french-gray": "#C0CCD844",
-            "accent-1-blue-crayola": "#687bf3ff",
-            "accent-2-space-cadet": "#2d3047ff",
-            "accent-2-space-cadet-li": "#2D3047D0",
-            "accent-3-orange-2": "#FFD8A8",
-            "accent-3-orange-4": "#FFA94D",
+            "base-french-gray": "#fafbf8",
+            "accent-1-slate": "#4b4f4e",
+            "accent-2-space-cadet": "#4b4f4e",
+            "accent-2-space-cadet-li": "rgba(75,79,78,0.76)",
+            "accent-3-reddish": "#ef6334",
             "accent-4-orange-5": "#FF922B",
-            "text-1-davys-grey": "#525251ff"
+            "text-1-almost-black": "#111316"
         }
     },
   },

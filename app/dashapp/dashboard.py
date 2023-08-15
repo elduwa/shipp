@@ -52,15 +52,37 @@ def build_dashboard_layout():
                           ]),
                           html.Div(className="dash-container", children=[
                               html.Div(className="graph-div", children=[
-                                  dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs", variant="pills",
-                                           color="orange",
-                                           children=[
-                                               dmc.TabsList(className="tabs-list", children=[
-                                                   dmc.Tab("Total queries", value="1", className="tab"),
-                                                   dmc.Tab("Domains", value="2", className="tab"), ]),
-                                               html.Div(className="tabs-content h-w-full", children=[
-                                                   dcc.Graph(className="h-w-full", figure={}, id="main-plot",
-                                                             responsive=True, config={'displaylogo': False})])])]),
+                                  dmc.MantineProvider(
+                                      theme={
+                                          "colors": {
+                                              "reddish": [
+                                                  "#F0E7E5",
+                                                  "#E4CEC6",
+                                                  "#DCB4A7",
+                                                  "#DB9B85",
+                                                  "#E1805F",
+                                                  "#EF6334",
+                                                  "#D8592E",
+                                                  "#B65635",
+                                                  "#98533C",
+                                                  "#814F3E",
+                                                  "#6E4A3E",
+                                                  "#5F453C"
+                                              ]
+                                          },
+                                      },
+                                      children=[
+                                          dmc.Tabs(className="tabs h-w-full", value="1", id="graph-tabs",
+                                                   variant="pills",
+                                                   color="reddish",
+                                                   children=[
+                                                       dmc.TabsList(className="tabs-list", children=[
+                                                           dmc.Tab("Total queries", value="1", className="tab"),
+                                                           dmc.Tab("Domains", value="2", className="tab"), ]),
+                                                       html.Div(className="tabs-content h-w-full", children=[
+                                                           dcc.Graph(className="h-w-full", figure={}, id="main-plot",
+                                                                     responsive=True,
+                                                                     config={'displaylogo': False})])])])]),
                               html.Div(className="card-div", children=[
                                   create_card("card-1-text", "card-1-subtext")
                               ]),
