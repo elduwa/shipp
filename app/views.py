@@ -1,13 +1,11 @@
 # App routing
-import requests
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app, abort
 from app.extensions import db
 from app.models import Device, DeviceConfig, User, Policy
 from app.forms import DeviceForm, LoginForm, RegistrationForm
-from app.dashapp.dashboard import init_dashboard
 from datetime import datetime
 from flask_login import login_required, login_user, logout_user
-from app.constants import PolicyType, DefaultPolicyValues
+from app.constants import PolicyType
 from app.service_integration_api import init_pihole_device, update_pihole_device
 
 bp = Blueprint("main", __name__, template_folder="templates")

@@ -2,7 +2,6 @@ from app.extensions import db
 from app.models import Device, DeviceConfig, Policy
 from app.constants import PolicyType, DefaultPolicyValues
 from flask import current_app
-from sqlalchemy.orm import close_all_sessions
 from app.policy_engine.database_sync import sync_policies_to_pihole
 
 
@@ -10,7 +9,6 @@ def evaluate_monitoring_data(dataset: list):
     current_app.logger.info("Evaluating monitoring data")
     device_to_domains = transform_dataset(dataset)
     device_ips = device_to_domains.keys()
-    bulk_insert_rows = dict()
     for device_ip in device_ips:
         device, new_policies = evaluate_device_policies(device_ip, device_to_domains[device_ip])
         if device is not None and new_policies is not None and len(new_policies) > 0:

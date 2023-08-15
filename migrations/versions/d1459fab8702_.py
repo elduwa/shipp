@@ -8,7 +8,6 @@ Create Date: 2023-07-30 16:45:02.350739
 import logging
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.orm import Session
 
 
 # revision identifiers, used by Alembic.
@@ -23,48 +22,10 @@ def upgrade():
     logger = logging.getLogger("alembic")
     logger.info("Starting migration d1459fab8702")
 
-    results = []
-
-    update_sql = '''
-        UPDATE policy SET device_id = (
-            SELECT m.device_id FROM policy_device_map m WHERE policy_id = policy.id
-        )
-    '''
-
-    with op.batch_alter_table('policy', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('device_id', sa.Integer, nullable=True))
-        batch_op.create_foreign_key("fk_policy_device_id_device", 'device', ['device_id'], ['id'])
-        #batch_op.alter_column('device_id', nullable=False)
-        logger.info("Added device_id column to policy table")
-
-        '''
-        connection.execute(sa.text(update_sql))
-        connection.commit()
-
-        connection.execute(sa.text("DROP TABLE IF EXISTS policy_device_map"))
-        connection.commit()
-        '''
-    '''
-    with op.get_context().autocommit_block():
-        session = Session(bind=connection)
-        res = session.execute(sa.text("SELECT policy_id, device_id FROM policy_device_map"))
-        logger.info("Got %s results", res.rowcount)
-        results.extend(res.fetchall())
-        session.execute(sa.text("DROP TABLE IF EXISTS policy_device_map"))
-
-
     with op.batch_alter_table('policy', schema=None) as batch_op:
         batch_op.add_column(sa.Column('device_id', sa.Integer, nullable=True))
         batch_op.create_foreign_key("fk_policy_device_id_device", 'device', ['device_id'], ['id'])
         logger.info("Added device_id column to policy table")
-
-
-    op.get_bind().commit()
-
-    with op.get_context().autocommit_block():
-        binds = [{'id': r[0], 'device_id': r[1]} for r in results]
-        connection.execute(sa.text("UPDATE policy SET device_id = :device_id WHERE id = :id"), binds)
-    '''
 
     # ### end Alembic commands ###
 
@@ -79,7 +40,5 @@ def downgrade():
     with op.batch_alter_table('policy', naming_convention=naming_convention) as batch_op:
         batch_op.drop_constraint("fk_policy_device_id_device", type_='foreignkey')
         batch_op.drop_column('device_id')
-
-
 
     # ### end Alembic commands ###
