@@ -1,6 +1,20 @@
 import os
 from dotenv import load_dotenv
 import pytest
+from contextlib import contextmanager
+
+
+# Context manager to safely close SQLAlchemy sessions and connections
+@contextmanager
+def session_scope(session):
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 @pytest.fixture
@@ -20,8 +34,10 @@ def app():
 
     with app.app_context():
         from app.extensions import db
-        db.session.remove()
-        db.drop_all()
+        with session_scope(db.session):
+            metadata = db.metadata
+            for table in reversed(metadata.sorted_tables):
+                db.session.execute(table.delete())
 
 
 @pytest.fixture
