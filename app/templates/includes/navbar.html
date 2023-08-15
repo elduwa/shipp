@@ -1,17 +1,25 @@
 <nav class="bg-opacity-0 bg-white border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="{{ url_for("main.index") }}" class="flex items-center">
-            <img src="{{ url_for('static', filename='assets/octopus.svg') }}" class="h-8 mr-3" alt="SHIFT Logo" />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap text-white dark:text-white">SHIFT</span>
+            <svg width="83px" height="83px" viewBox="-81.92 -81.92 1187.84 1187.84" class="icon"
+                 xmlns="http://www.w3.org/2000/svg" fill="#ef6334" stroke="#ef6334" stroke-width="0.01024">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <path fill="#ef6334"
+                          d="M512 386.88V448h405.568a32 32 0 0130.72 40.768l-76.48 267.968A192 192 0 01687.168 896H336.832a192 192 0 01-184.64-139.264L75.648 488.768A32 32 0 01106.368 448H448V117.888a32 32 0 0147.36-28.096l13.888 7.616L512 96v2.88l231.68 126.4a32 32 0 01-2.048 57.216L512 386.88zm0-70.272l144.768-65.792L512 171.84v144.768zM512 512H148.864l18.24 64H856.96l18.24-64H512zM185.408 640l28.352 99.2A128 128 0 00336.832 832h350.336a128 128 0 00123.072-92.8l28.352-99.2H185.408z"></path>
+                </g>
+            </svg>
+            <span class="self-center text-3xl md:ml-2 font-semibold whitespace-nowrap text-text-1-almost-black dark:text-white">shipp.</span>
         </a>
-        <div class="flex items-center md:order-2 ml-auto">
+        <div class="flex items-center md:order-2">
             <button type="button"
                     class="flex mr-3 text-sm bg-opacity-0 bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                     id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                     data-dropdown-placement="bottom">
                 <span class="sr-only">Open user menu</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24">
-                    <path fill="white"
+                    <path fill="#ef6334"
                           d="M12 19.2c-2.5 0-4.71-1.28-6-3.2c.03-2 4-3.1 6-3.1s5.97 1.1 6 3.1a7.232 7.232 0 0 1-6 3.2M12 5a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-3A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10c0-5.53-4.5-10-10-10Z"/>
                 </svg>
             </button>
@@ -24,20 +32,20 @@
                 </div>
                 <ul class="py-2" aria-labelledby="user-menu-button">
                     {% if current_user.is_authenticated %}
-                    <li>
-                        <a href="#"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
-                    </li>
+                        <li>
+                            <a href="#"
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
+                        </li>
                     {% endif %}
                     <li>
                         {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('main.logout') }}"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
-                            out</a>
+                            <a href="{{ url_for('main.logout') }}"
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
+                                out</a>
                         {% else %}
-                        <a href="{{ url_for('main.login') }}"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
-                            in</a>
+                            <a href="{{ url_for('main.login') }}"
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
+                                in</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -53,20 +61,20 @@
                 </svg>
             </button>
         </div>
-        <div class="items-center justify-between hidden w-full md:flex md:ml-16 md:w-auto md:order-1" id="navbar-user">
-            <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-12 md:mt-0 md:border-0 md:bg-white md:bg-opacity-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+        <div class="items-center justify-between hidden w-full md:flex md:mx-auto md:pr-14 md:w-auto md:order-1" id="navbar-user">
+            <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-16 md:mt-0 md:border-0 md:bg-white md:bg-opacity-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
                     <a href="{{ url_for('main.index') }}"
-                       class="block py-2 pl-3 pr-4 text-white rounded md:bg-transparent md:text-white md:p-0 md:dark:text-blue-500"
+                       class="block py-2 pl-3 pr-4 text-text-1-almost-black text-lg rounded md:bg-transparent md:p-0 md:dark:text-blue-500"
                        aria-selected="page">Home</a>
                 </li>
                 <li>
                     <a href="{{ url_for('main.devices') }}"
-                       class="block py-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Devices</a>
+                       class="block py-2 pl-3 pr-4 text-text-1-almost-black text-lg rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:accent-accent-2-space-cadet-li md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Devices</a>
                 </li>
                 <li>
                     <a href="{{ url_for('main.device_policies_overview') }}"
-                       class="block py-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-orange-400 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Policies</a>
+                       class="block py-2 pl-3 pr-4 text-text-1-almost-black text-lg rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:accent-accent-2-space-cadet-li md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Policies</a>
                 </li>
             </ul>
         </div>
