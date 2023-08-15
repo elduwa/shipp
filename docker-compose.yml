@@ -52,11 +52,11 @@ services:
       - influxdb-config:/etc/influxdb2
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=admin-init-password
+      - DOCKER_INFLUXDB_INIT_USERNAME=<your-username>
+      - DOCKER_INFLUXDB_INIT_PASSWORD=<your-initial-password>
       - DOCKER_INFLUXDB_INIT_ORG=home
       - DOCKER_INFLUXDB_INIT_BUCKET=communications
-      - DOCKER_INFLUXDB_INIT_RETENTION=1y
+      - DOCKER_INFLUXDB_INIT_RETENTION=4w
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=<your_influxdb_auth_token>
     restart: unless-stopped
 
@@ -66,8 +66,8 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "${HTTPPORT}:80/tcp"
-      - "${HTTPSPORT}:443/tcp"
+      - "80:80/tcp"
+      - "443:443/tcp"
     environment:
       - "TZ:${TZ}"
       - "WEBPASSWORD:${WEBPASSWORD}"
@@ -79,7 +79,7 @@ services:
     volumes:
       - "pihole-etc:/etc/pihole"
       - "pihole-dnsmasq:/etc/dnsmasq.d"
-      - "${RESOLV_CONF}:/etc/resolv.conf"
+      - "./resolv.conf:/etc/resolv.conf"
     restart: unless-stopped
 
   homeassistant:

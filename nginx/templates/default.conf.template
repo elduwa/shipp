@@ -1,4 +1,3 @@
-# Renamed and moved to /etc/nginx/nginx.conf
 
 upstream backend {
     server shipp:8000;
