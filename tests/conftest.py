@@ -14,7 +14,7 @@ def app():
     app = create_app("test")
     with app.app_context():
         from app.extensions import db
-        db.create_all()
+        db.create_all(bind_key=[None, "pihole"])
 
     yield app
 
