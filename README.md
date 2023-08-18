@@ -77,6 +77,14 @@ On Raspberry Pi OS:
 
 ## Usage examples
 
+### Using the dashboard
+https://github.com/elduwa/shipp/assets/33815072/e52f1358-204a-47b2-8e5d-10d513506c99
+
+### Adding a new device
+https://github.com/elduwa/shipp/assets/33815072/0d7b9c6e-1d19-465f-bef3-5cf94be6b64e
+
+### Modifying device policies
+https://github.com/elduwa/shipp/assets/33815072/66cee392-0d71-40bf-a610-3e1597c072a2
 
 
 ## Development setup
